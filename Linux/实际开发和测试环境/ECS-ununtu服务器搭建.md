@@ -64,5 +64,105 @@ PubkeyAuthentication yes
 * `apt-get install apache2 `
 
 
+### 安装mysql相关文件
+
+* `apt-get install php5-mysql`
+* `service mysql restart`
+* `service apache2 restart`
+
+### 测试
+
+````php
+<?php
+phpinfo();
+?>
+和
+echo mysql_connect('localhost', 'root', 'xIn772333@')?'ok':'error';
+````
+
+### 修改项目根目录
+
+* `cd /etc/apache2/sites-available/`
+* `vim /etc/apache2/sites-available/default`
+
+```
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /www
+```
+
+### 配置虚拟主机
+
+* `mkdir /www/mark2` 
+
+* `chmod -R 755 /www/mark2`
+
+* 创建测试文件
+
+* 设置配置文件
+
+  1. `cp /etc/apache2/sites-available/default /etc/apache2/sites-available/mark2`
+
+  2. 编辑内部内容
+
+     ````
+     <VirtualHost *:80>
+     	ServerName www.xin77.xyz
+
+     	ServerAdmin ********@qq.com
+
+     	DocumentRoot /www/mark2
+     	<Directory /www/mark2>
+     		Options Indexes FollowSymLinks MultiViews
+     		AllowOverride None
+     		Order allow,deny
+     		allow from all
+     	</Directory>
+
+     	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+     	<Directory "/usr/lib/cgi-bin">
+     		AllowOverride None
+     		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+     		Order allow,deny
+     		Allow from all
+     	</Directory>
+
+     	ErrorLog ${APACHE_LOG_DIR}/mark2_error.log
+
+     	# Possible values include: debug, info, notice, warn, error, crit,
+     	# alert, emerg.
+     	LogLevel warn
+
+     	CustomLog ${APACHE_LOG_DIR}/mark2_access.log combined
+
+         Alias /doc/ "/usr/share/doc/"
+         <Directory "/usr/share/doc/">
+             Options Indexes MultiViews FollowSymLinks
+             AllowOverride None
+             Order deny,allow
+             Deny from all
+             Allow from 127.0.0.0/255.0.0.0 ::1/128
+         </Directory>
+
+     </VirtualHost>
+     ````
+
+  3. `ln -s /etc/apache2/sites-available/mark2  /etc/apache2/sites-enabled/mark2`
+
+  4. `apache2ctl configtest` 测试配置
+
+  5. `vim /etc/host`
+
+     ```
+     60.205.218.119	www.xin77.xyz
+     ```
+
+  6. `service apache2 restart`
+
+### 配置https
+
+
+
+
 
 [](http://www.mr-wu.cn/aliyun-ecs-ubuntu/)
