@@ -10,7 +10,7 @@
 
 * ` sudo a2enmod ssl` 开启ssl模块
 
-* `cp /etc/apache2/sites-available/xxxx-ssl.conf /etc/apache2/sites-enabled/`
+* `ln -s /etc/apache2/sites-available/xxxx-ssl.conf /etc/apache2/sites-enabled/`
 
 * 修改上述文件和虚拟主机配置位置一样，修改证书位置
 
