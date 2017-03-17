@@ -23,9 +23,13 @@
 
 ## 将`http`重定向到`https`
 
+## 开启rewrite
+
+* sudo a2enmod rewrite
 
 
+* ln -s /etc/apache2/mods-available/rewrite.load  /etc/apache2/mods-enabled/rewrite.load
 
-
+  ​
 
 
