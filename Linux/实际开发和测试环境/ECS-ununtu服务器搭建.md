@@ -167,7 +167,7 @@ echo mysql_connect('localhost', 'root', 'xIn772333@')?'ok':'error';
 
   6. `service apache2 restart`
 
-### 配置https
+> **注意：** `apache2`和`apache4`的`apache2.conf `内容是不同的，主义修改主目录的时候也要修改该文件
 
 
 
