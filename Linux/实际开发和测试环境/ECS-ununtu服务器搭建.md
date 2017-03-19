@@ -74,7 +74,16 @@ PubkeyAuthentication yes
 
 ### 安装mysql相关文件
 
+apt-get install libapache2-mod-php5 php5 php5-cli php-pear php5-xcache libapache2-mod-perl2 libapache2-mod-auth-mysql php5-mysql php5-mcrypt
+
+
+
+* apt-get install libapache2-mod-php5
+* `apt-get install php5`
+* a2enmod php5
 * `apt-get install php5-mysql`
+
+
 * `service mysql restart`
 * `service apache2 restart`
 

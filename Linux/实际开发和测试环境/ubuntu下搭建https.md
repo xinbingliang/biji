@@ -32,4 +32,12 @@
 
   ​
 
+* apache2.4
+
+  ```
+  AllowOverride All
+  ```
+
+  ​
+
 

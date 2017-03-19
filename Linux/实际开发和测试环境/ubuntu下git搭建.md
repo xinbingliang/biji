@@ -78,7 +78,7 @@ git clone git@IP:repositories/mytest.git
 
 ## ubuntu卸载软件
 
-* `apt-get --purge remove <package>` 删除软件及其配置文件
+* `apt-get purge remove <package>` 删除软件及其配置文件
 
 * `apt-get purge / apt-get –purge remove` 删除已安装包（不保留配置文件)。 
 
