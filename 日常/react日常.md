@@ -12,15 +12,13 @@
 
 * [React 官网学习笔记](https://juejin.im/entry/589fd88d570c350057730e17)
 
-  ​​
+  ​
 
 
 
 * [极客学院文档](http://wiki.jikexueyuan.com/project/react/)
 
-* [~gitbook文档](https://hulufei.gitbooks.io/react-tutorial/content/introduction.html)
-
-* ​
+* [~gitbook文档](https://hulufei.gitbooks.io/react-tutorial/content/introduction.html)​
 
 * [React实践图片画廊应用(上)](http://www.imooc.com/learn/507)
 
