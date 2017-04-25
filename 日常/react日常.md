@@ -7,6 +7,7 @@
 * [请用心练完这16个webpack小例子](https://juejin.im/post/58edcbda44d904005774cfb1)
 * [React 官网学习笔记](https://juejin.im/entry/589fd88d570c350057730e17)
 * [react文档](http://www.phperz.com/article/15/0712/140538.html)
+* [](http://www.css88.com/doc/webpack2/concepts/)
 * [Webpack 和 React 小书](http://itindex.net/detail/53885-webpack-react)
 * [React 技术栈系列教程](http://www.ruanyifeng.com/blog/2016/09/react-technology-stack.html)
 * (Redux 简明教程)[https://github.com/kenberkeley/redux-simple-tutorial]
@@ -17,7 +18,7 @@
 
 * [redux](http://zexeo.com/course/5672c2bd52b470c02bc28b6c)
 
-* [~gitbook文档](https://hulufei.gitbooks.io/react-tutorial/content/introduction.html)​
+* [~gitbook文档](https://hulufei.gitbooks.io/react-tutorial/content/introduction.html)
 
 * [React实践图片画廊应用(上)](http://www.imooc.com/learn/507)
 
