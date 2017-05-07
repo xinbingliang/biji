@@ -10,7 +10,6 @@
 
 * [资源合集 native](https://github.com/reactnativecn/react-native-guide)
 * [React 学习资源汇总](https://juejin.im/entry/582042a3d2030900550a6f22)
-* [webpack+react+antd单页面应用实例](http://luckykun.com/work/2016-11-06/react-antd-demo.html)
 * [3个DEMO](https://github.com/luckykun/About-React)
 * [请用心练完这16个webpack小例子](https://juejin.im/post/58edcbda44d904005774cfb1)
 * [React 官网学习笔记](https://juejin.im/entry/589fd88d570c350057730e17)
