@@ -1,6 +1,56 @@
 # node日常
 
+* [Node.JS官方中文文档](http://www.he11oworld.com/front-end/2820.html)
+
+* [](http://nodejs.cn/api/child_process.html#child_process_child_pid)
+
+* [微信公众号JS全栈开发实战](http://www.maiziedu.com/course/836/)
+
 * [NodeJS爬虫应用之资讯助手系统](http://www.maiziedu.com/course/626/)
+
+* [Express+ejs模板开发web应用](http://www.maiziedu.com/course/773/)
+
+* [NodeJS项目实战—仿cnodejs社区论坛](http://www.maiziedu.com/course/707/)
+
+* [玩转node.js全栈开发之博客系统](http://www.maiziedu.com/course/627/)
+
+* [Mock.js+Express实现京东商城数据模拟](http://www.maiziedu.com/course/579/)
+
+* [Express](http://www.maiziedu.com/course/391/)
+
+* [node.js开发web应用基础](http://www.maiziedu.com/course/694/)
+
+* [玩转node.js全栈开发之博客系统 ](http://www.maiziedu.com/course/627/)
+
+* [基于Node.js的web实时聊天室项目](http://www.maiziedu.com/course/597/)
+
+* [node.js项目实战](http://www.maiziedu.com/course/517/)
+
+* [node.js从入门到进阶](http://www.maiziedu.com/course/515/)
+
+* [用Meteor构建App程序](http://www.maiziedu.com/course/342/)
+
+  ​
+
+  ​
+
+  ​
+
+  ​
+
+  ​
+
+  ​
+
+  ​
+
+  ​
+
+  ​
+
+  ​
+
+  ​
 
   ​
 
