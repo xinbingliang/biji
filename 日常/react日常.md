@@ -8,6 +8,7 @@
 
 
 
+* [Redux+React+Express+Socket.io构建实时聊天应用](http://zexeo.com/course/5672c2bd52b470c02bc28b6c)
 * [资源合集 native](https://github.com/reactnativecn/react-native-guide)
 * [React 学习资源汇总](https://juejin.im/entry/582042a3d2030900550a6f22)
 * [3个DEMO](https://github.com/luckykun/About-React)
