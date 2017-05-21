@@ -16,7 +16,7 @@ iZ2zee150isb39wr4ijkpmZ
 * `mount /dev/vdb /www/` 挂载目录
 * `df -lh` 查看挂载情况
 * `blkid` 查看磁盘uuid
-* `echo 'UUID="2347d891-b147-46b9-a4f8-9ce361babdcc /www ext4 defaults 0 0' >> /etc/fstab` 添加自动挂载
+* `echo 'UUID=2347d891-b147-46b9-a4f8-9ce361babdcc /www ext4 defaults 0 0' >> /etc/fstab` 添加自动挂载
 
 ## 创建xin用户
 
