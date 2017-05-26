@@ -57,7 +57,12 @@
 
 * 修改子配置的项目位置
 
-  ​
 
+## 重定向https
 
+````
+RewriteEngine on
+RewriteCond %{SERVER_PORT} !^443$
+RewriteRule ^(.*)?$ https://%{SERVER_NAME}/$1 [L,R]
+````
 

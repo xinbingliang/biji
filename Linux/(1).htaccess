@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+  Options +FollowSymlinks
+  RewriteEngine On
+
+  RewriteCond %{HTTP_HOST} ^h5.ttfj.com$ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+
+  RewriteCond %{HTTP_HOST} ^cms.ttfj.com$ [NC]
+  RewriteCond %{REQUEST_URI} !^/cms/
+  RewriteRule ^(.*)$ cms/$1 [L,QSA]
+
+  RewriteCond %{HTTP_HOST} ^b2b.ttfj.com$ [NC]
+  RewriteCond %{REQUEST_URI} !^/b2b/
+  RewriteRule ^(.*)$ b2b/$1 [L,QSA]
+</IfModule>
