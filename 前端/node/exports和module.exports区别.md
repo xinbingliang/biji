@@ -99,10 +99,3 @@ r.about(); // Ozzy is 62 years old
 
 
 
-
-
-
-
-
-
-
