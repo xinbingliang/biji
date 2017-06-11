@@ -183,3 +183,9 @@ echo mysql_connect('localhost', 'root', 'xIn772333@')?'ok':'error';
 
 
 [](http://www.mr-wu.cn/aliyun-ecs-ubuntu/)
+
+sudo php5enmod mcrypt
+
+sudo php5enmod mcrypt
+sudo service apache2 restart
+
