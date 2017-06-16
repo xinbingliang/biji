@@ -258,9 +258,109 @@ $ node main.js
 
 运行成功后，打开虚拟机桌面的浏览器，访问“[http://127.0.0.1:8080”就会看到页面显示“home](http://127.0.0.1:8080%E2%80%9D%E5%B0%B1%E4%BC%9A%E7%9C%8B%E5%88%B0%E9%A1%B5%E9%9D%A2%E6%98%BE%E7%A4%BA%E2%80%9Chome/) page”，访问“[http://127.0.0.1:8080/about”就会看到页面显示“about](http://127.0.0.1:8080/about%E2%80%9D%E5%B0%B1%E4%BC%9A%E7%9C%8B%E5%88%B0%E9%A1%B5%E9%9D%A2%E6%98%BE%E7%A4%BA%E2%80%9Cabout) page”，访问“[http://127.0.0.1:8080”下的其他页面就会看到页面显示“404](http://127.0.0.1:8080%E2%80%9D%E4%B8%8B%E7%9A%84%E5%85%B6%E4%BB%96%E9%A1%B5%E9%9D%A2%E5%B0%B1%E4%BC%9A%E7%9C%8B%E5%88%B0%E9%A1%B5%E9%9D%A2%E6%98%BE%E7%A4%BA%E2%80%9C404/) page not found”。
 
+## 表单文本提交
+
+````javascript
+var body = '<html>' + '<head>'+  
+    '<meta http-equiv="Content-Type" content="text/html; '+  
+    'charset=UTF-8" />'+  
+    '</head>'+  
+    '<body>'+  
+    '<form action="/upload" method="post">'+  
+    '<textarea name="text" rows="20" cols="60"></textarea>'+  
+    '<input type="submit" value="Submit text" />'+  
+    '</form>'+  
+    '</body>'+  
+    '</html>';  
+
+response.writeHead(200, {"Content-Type": "text/html"});  
+response.write(body);
+````
+
+````javascript
+var pathname = url.parse(request.url).pathname; 
+var postData = "";
+
+request.setEncoding("utf8"); 
+request.addListener("data", function(postDataChunk) {  
+    postData += postDataChunk;  
+    console.log("Received POST data chunk '"+ postDataChunk + "'.");  
+});  
+request.addListener("end", function() {  
+    route(handle, pathname, response, postData);  
+});
+
+var querystring = require("querystring");
+response.write("You've sent the text: "+ querystring.parse(postData).text);
+````
+
+## 图片显示
+
+````javascript
+fs = require("fs");
+
+function show(response) {  
+    console.log("Request handler 'show' was called.");  
+
+    fs.readFile("./tmp/test.png", "binary", function(error, file) {  
+        if (error) {  
+            response.writeHead(500, {"Content-Type": "text/plain"});  
+            response.write(error + "\n");  
+            response.end();  
+        } else {  
+            response.writeHead(200, {"Content-Type": "image/png"});  
+            response.write(file, "binary");  
+            response.end();  
+        }  
+    });  
+}
+
+response.writeHead(200, {"Content-Type": "image/png"});  
+response.write(file, "binary");
+````
 
 
 
+## 提交图片
 
+````javascript
+var body = '<html>'+  
+    '<head>'+  
+    '<meta http-equiv="Content-Type" '+  
+    'content="text/html; charset=UTF-8" />'+  
+    '</head>'+ 
+    '<body>'+  
+    '<form action="/upload" enctype="multipart/form-data" '+  
+    'method="post">'+  
+    '<input type="file" name="upload">'+  
+    '<input type="submit" value="Upload file" />'+  
+    '</form>'+    
+    '</body>'+  
+    '</html>';
+    
+    
+    
+var formidable = require("./formidable");
 
+var form = new formidable.IncomingForm(); 
+// 实例化一个formidable.IncomingForm；
+console.log("about to parse");  
+form.uploadDir = "tmp";  
+// 指定上传目录
+
+form.parse(request, function(error, fields, files) {   
+    // parse负责解析文件
+    console.log("parsing done");   
+
+    fs.renameSync(files.upload.path, "./tmp/test.png");   
+    // fs模块的renameSync进行重命名
+    response.writeHead(200, {"Content-Type": "text/html"});   
+
+    response.write("received image:<br/>");   
+
+    response.write("<img src='/show' />");   
+    // 使用img 标签来显示图片 ，因为show方法会返回一张图片
+    response.end();   
+});
+````
 
