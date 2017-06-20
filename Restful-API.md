@@ -16,8 +16,6 @@ XML格式，增加特定消息头
   * 在后面指定动物的id
 * `https://api.example.com/v1/employees` 雇员资源
 
-### 2. HTTP动词
-
 ### 2.HTTP动词
 
 CURD
@@ -74,8 +72,26 @@ CURD
 * PATCH /collections/identity 返回被修改的属性
 * DELETE /collections/identity 返回一个空文档 
 
- 
 
+ **错误处理**
+
+输出JSON格式的错误信息
+
+````
+throw new Exception('用户名已经存在', ErrorCode::USERNAME_EXISTS);
+````
+
+```
+class ErrorCode{
+  const USERNAME_EXISTS = 1;	//用户已经存在
+}
+```
+
+
+
+**返回结果**
+
+输出JSON数组或JSON对象
 
 
 
