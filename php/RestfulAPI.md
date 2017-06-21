@@ -16,8 +16,6 @@ XML格式，增加特定消息头
   - 在后面指定动物的id
 - `https://api.example.com/v1/employees` 雇员资源
 
-### 2. HTTP动词
-
 ### 2.HTTP动词
 
 CURD
@@ -48,14 +46,17 @@ CURD
 
 - 200 OK 服务器返回用户请求的数据,该操作是幂等的
 - 201 CREATED 新建或修改数据成功
-- 204 NO CONTENT 删除数据成功
-- 400 BAD REQUEST 用户发出的请求有错误，该错误是幂等的
-- 401 Unauthorized 表示用户没有认证，无法进行操作
-- 403 Forbidden 表示用户访问是被禁止的
+- 204 NO CONTENT 删除数据成功，和空的响应体
+- 400 BAD REQUEST 用户发出的请求有错误，该错误是幂等的,用户传递错误的参数
+- 401 Unauthorized 表示用户没有认证，无法进行操作（没有登录注册）
+- 403 Forbidden 表示用户访问是被禁止的，权限不合理（A用户读取B用户数据）
+- 405 不被允许的请求方式
 - 422 Unprocesable Entity 当创建一个对象,发生一个验证错误（提供验证信息不全）
 - 500 INTERNAL SERVER ERROR 服务器发生错误，用户将无法判断发出请求是否成功
 
 ### 5. 错误处理
+
+配合HTTP状态码实现，ErrorMessage字段，语义化的错误提示
 
 ```javascript
 {
@@ -72,7 +73,7 @@ CURD
 - POST/collections 返回新生成的资源对象
 - PUT /collections/identity 返回(被更新资源的)完整的资源对象
 - PATCH /collections/identity 返回被修改的属性
-- DELETE /collections/identity 返回一个空文档 
+- DELETE /collections/identity 返回一个空文档 ，204状态码
 
 ## 概念和准则
 
@@ -131,6 +132,109 @@ HTTP/1.1 200 OK
 * 500 Internal Server Error 服务器发生不可预期的错误
 * 503 Server Unavailable 服务器当前不能处理客户端的请求
 
+
+````
+<?php
+class Restful
+{
+    private $_user;
+    private $_article;
+
+
+    private $_requestMethod;    //请求方法
+    private $_resourceName;     //请求资源名称
+    private $_id;               //请求的资源标记
+
+    //允许请求的资源列表
+    private $_allowResources = array(
+        'user',
+        'articles'
+    );
+
+    //允许使用的请求方法
+    private $_allowRequestMethods = array(
+        'GET',
+        'POST',
+        'PUT',
+        'DELETE',
+        'OPTIONS'   //Ajax跨域使用
+    );
+
+    //HTTP状态码和说明
+    private $_statusCode = array(
+        200 =>  'ok',
+        204 =>  'No Content',
+        400 =>  'Bad Request',
+        401 =>  'Unauthorized',
+        403 =>  'Forbidden',
+        404 =>  'Not Found',
+        405 =>  'Method Not Allowed',
+        500 =>  'Server Internal Error'
+    );
+
+
+
+    public function __construct($user, $article)
+    {
+        $this->_user = $user;
+        $this->_article = $article;
+    }
+
+    /**
+     * 唯一的公共入口
+     */
+    public function run()
+    {
+        try{
+            $this->_setupRequestMethod();
+            $this->_setupResource();
+            $this->_setupId();
+        }catch (Exception $e){
+            $this->_json
+        }
+    }
+
+    /**
+     * 初始化请求方法
+     */
+    public function _setupRequestMethod()
+    {
+
+    }
+
+    /**
+     * 初始化请求资源
+     */
+    public function _setupResource()
+    {
+        $this->_requestMethod = $_SERVER['REQUEST_METHOD'];
+
+        if(!in_array($this->_requestMethod, $this->_allowRequestMethods)) {
+            throw new Exception('请求方法不被允许', 405);
+        }
+    }
+
+    /**
+     * 初始化请求资源
+     */
+    public function _setupId()
+    {
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+````
 
 
 
