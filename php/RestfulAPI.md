@@ -133,8 +133,7 @@ HTTP/1.1 200 OK
 * 503 Server Unavailable 服务器当前不能处理客户端的请求
 
 
-````
-<?php
+`````PHP
 class Restful
 {
     private $_user;
@@ -188,9 +187,13 @@ class Restful
         try{
             $this->_setupRequestMethod();
             $this->_setupResource();
-            $this->_setupId();
+            if($this->_resourceName == 'users'){
+                return $this->_handleUser();
+            } else {
+                return $this->_handleArticle();
+            }
         }catch (Exception $e){
-            $this->_json
+            $this->_json(array('error'=>$e->getMessage()), $e->getCode());
         }
     }
 
@@ -199,7 +202,12 @@ class Restful
      */
     public function _setupRequestMethod()
     {
+        $this->_requestMethod = $_SERVER['REQUEST_METHOD'];
 
+        if(!in_array($this->_requestMethod, $this->_allowRequestMethods)) {
+            throw new Exception('请求方法不被允许', 405);
+
+        }
     }
 
     /**
@@ -207,34 +215,37 @@ class Restful
      */
     public function _setupResource()
     {
-        $this->_requestMethod = $_SERVER['REQUEST_METHOD'];
-
-        if(!in_array($this->_requestMethod, $this->_allowRequestMethods)) {
-            throw new Exception('请求方法不被允许', 405);
+        $path = $_SERVER['PATH_INFO'];
+        $path = trim($path, '/');
+        $params = explode('/', $path);
+        $this->_resourceName = $params[0];
+        if(!in_array($this->_resourceName, $this->_allowResources)){//不在允许的资源列表中
+            throw new Exception('请求资源不被允许', 400);
         }
+        $this->_id = empty($params[1])?'':$params[1];
     }
+
+
 
     /**
-     * 初始化请求资源
+     * json输出
      */
-    public function _setupId()
+    private function _json($array, $code = 0)
     {
+        if($code > 0 && $code != 200 && $code != 204){
+            header("HTTP/1.1 ".$code." ".$this->_statusCode[$code]);
+        }
+        header('Content-Type: application/json;charset=utf-8');
 
+
+
+        echo json_encode($array, JSON_UNESCAPED_UNICODE);
+        exit();
     }
 }
+`````
 
 
-
-
-
-
-
-
-
-
-
-
-````
 
 
 
