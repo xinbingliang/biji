@@ -126,6 +126,32 @@ app.get("/user/:name/", function(req, res) {
 });
 ```
 
+````javascript
+'use strict';
+const express = require('express');
+const path = require('path');
+
+let app = express();
+
+app.param('id', function(req, res, next, id){
+   console.log(id);
+   next();
+})
+
+
+app.get('/user/:id', function(req, res){
+    res.send('.....');
+})
+
+app.listen(8080, function(err){
+    if(err){
+        console.log(err);
+    } else {
+        console.log('service listening 8080');
+    }
+})
+````
+
 ## params基本用法
 
 ````javascript
