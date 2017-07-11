@@ -5,10 +5,26 @@
 ## 安装
 
 * 下载
+
+  ````
+  Tcl-8.5.10的安装 
+  下载 http://downloads.sourceforge.net/tcl/tcl8.5.10-src.tar.gz
+  tar -xf
+  cd unix && ./configure --prefix=/usr  --enable-threads  --mandir=/usr/share/man 
+  make
+  make install 
+  ````
+
+  ​
+
 * tar -zxfv  .tar.gz
+
 * cd 
+
 * make
+
 * make PREFIX=/usr/local/redis  install  指定安装位置
+
 * cd /usr/local/redis
 
 ### 安装文件说明
@@ -22,7 +38,7 @@
 ### 启动
 
 * `cp /usr/local/src/redis/redis.cof 和bin同级`
-* `redis-server ./redis.conf` 启动(修改配置daemonize 为yes则在后台运行)
+* `redis-server ../redis.conf` 启动(修改配置daemonize 为yes则在后台运行)
 
 ### 连接
 
