@@ -49,6 +49,7 @@
 ````
 set name 辛丙亮 //设置键值
 select 1 切换库
+flushdb
 ````
 
 ### keys pattern
@@ -96,11 +97,59 @@ select 1 切换库
 
 ## 数据类型
 
+* `set key value [ex 秒数] | [px 毫秒数] [nx]/[xx]` 设置时指定生存周期
+
+  * nx 表示key不存在的时候执行操作
+  * xx 表示key必须存在时执行操作，替换
+
+* `mset multi set` 一次性设置多个键值
+
+  ````
+  mset a aman b bold c controller
+  keys *
+  ````
+
+* `mget key1 key2` 一次获取多个key
+
+* `setrange key offset value ` 将字符串的偏移字节改成value
+
+  ```
+  set word hello
+  setrange word 2 ??
+  ```
+
+* `append key value` 把value追加到key的原值上
+
+* `getrange key start stop` 获取字符串中[start, stop]范围的值
+
+* `getset key newvalue` 获取并返回旧值，设置新值(状态调整)
+
+* `incr key` 指定key的值加一，并返回加一后的值
+
+* `decr key` 指定的key减一，并返回操作后的值
+
+* `incrby key number` 指定增加幅度
+
+* `decr key bnumber` 
+
+* `incrbyfloat key 0.5` 浮点数增加
+
+### 链表(list)
+
+* `lpush key value` 将值插入到list的头部
+* `rpush key value` 
+* `rpop key` 返回并删除链表的尾部
+* `rpush lpop`
+* `lrange key start stop` 返回链表中[start, stop]中的元素
+* `lrem key count value` 从key链表中删除value值，count>0从头开始，count<0从尾部开始，count指个数
+* ` ltrim key start stop` 剪切key 对应的链表,且将[start, stop]重新赋值给key
+* `lindex key index` 返回index索引上的值
+* `llen key` 计算链表的元素个数
+* `linsert key after|before seach value` 在key链表上寻找seach值前|后插入value,找到就结束，不会插入多个
+* `rpop|push source dest` 将source的尾部取出放到dest头部，常做安全队列
+* `brop,blpop key timeout` 弹出key的头/尾部元素,timeout为超时时间，time为0则一直等待
+
 ### 字符串
-
-
-
-### 链表
 
 
 
