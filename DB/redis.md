@@ -147,15 +147,45 @@ flushdb
 * `RPOPLPUSH source dest` 将source的尾部取出放到dest头部，常做安全队列
 * `brpop,blpop key timeout` 弹出key的头/尾部元素,timeout为超时时间，time为0则一直等待
 
-### 字符串
+## 集合
 
+集合拥有无序性，确定性和唯一性的的特点
 
+* `sadd key value1 value2` 向集合key中增加元素
+* `srem value1 value2` 删除集合中集为value1 value2 的元素
+* `spop key` 返回并删除集合中key中1个随机元素
+* `srandmember key` 返回集合key中随机的一个元素
+* `smembers key` 返回集合中的所有元素
+* `sismember key value` 判断value是否在key集合中
+* `scard key` 返回集合中元素的个数
+* `smove source dest value` 将source中的value删除并添加到dest中
+* `sinter key1 key2 key3` 求出三个集合的交集并返回
+* `sinterstore dest key1 key2 key3` 求出多个几个的交集并dest
+* `suion key1 key2 ...` 求出并集并返回
+* `sdiff key1 key2 key3`求出差集并返回
+
+### 有序集合（order set）
+
+元素声明时要指定排序
+
+* `zadd key source1 value1 score2 value2` 添加元素
+* `zrem key value1 value2` 删除集合中的元素
+* `zremrangebyscore key min max` 按照scocre来删除元素，在min 和max之间
+* `zremrangebyrank key start end` 按排名删除元素,删除名次在[start, end]之间
+* `zrank key member` 查询member的排名(升序0开始)
+* `zrevrank key memeber` 查询member 的排名(降序0开始)
+* `zrange key start stop [withscores] `集合排序后返回名次[start, stop]的元素,默认升序
+* `zrevrange key start stop` 把集合降序降序排列，取名字[start, stop]之间的元素
+* `zrangebyscore key min max [withscores] limit offset N` 集合(升序)排列后取scre在[min,  max]内的元素
+* `zcard key` 返回元素的个数 
+* `zcount key min max` 返回[min, max]区间内元素的数量
+* `zinterstore destination numkeys key1 [key2...] [weights weight [weight...]] [AGGREGATE SUM|MIN|MAX]` 求key1，key2交集，权重分别是weight1,weight2 聚合方法用sum|minmax 结果保存在dest中
 
 ### 哈希结构集合
 
 
 
-### 有序集合
+
 
 
 
