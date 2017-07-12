@@ -15,8 +15,6 @@
   make install 
   ````
 
-  ​
-
 * tar -zxfv  .tar.gz
 
 * cd 
@@ -130,24 +128,24 @@ flushdb
 
 * `incrby key number` 指定增加幅度
 
-* `decr key bnumber` 
+* `decrby key bnumber`  指定减少幅度
 
 * `incrbyfloat key 0.5` 浮点数增加
 
 ### 链表(list)
 
-* `lpush key value` 将值插入到list的头部
-* `rpush key value` 
+* `lpush key value [value1.....]` 将值插入到list的头部
+* `rpush key value`  将新数据插入到尾部
 * `rpop key` 返回并删除链表的尾部
-* `rpush lpop`
-* `lrange key start stop` 返回链表中[start, stop]中的元素
+* `lpop key` 在链表头部弹出
+* `lrange key start stop` 返回链表中[start, stop]中的元素，返回所有值`lrange name 0 -1`
 * `lrem key count value` 从key链表中删除value值，count>0从头开始，count<0从尾部开始，count指个数
 * ` ltrim key start stop` 剪切key 对应的链表,且将[start, stop]重新赋值给key
 * `lindex key index` 返回index索引上的值
 * `llen key` 计算链表的元素个数
 * `linsert key after|before seach value` 在key链表上寻找seach值前|后插入value,找到就结束，不会插入多个
-* `rpop|push source dest` 将source的尾部取出放到dest头部，常做安全队列
-* `brop,blpop key timeout` 弹出key的头/尾部元素,timeout为超时时间，time为0则一直等待
+* `RPOPLPUSH source dest` 将source的尾部取出放到dest头部，常做安全队列
+* `brpop,blpop key timeout` 弹出key的头/尾部元素,timeout为超时时间，time为0则一直等待
 
 ### 字符串
 
