@@ -179,11 +179,24 @@ flushdb
 * `zrangebyscore key min max [withscores] limit offset N` 集合(升序)排列后取scre在[min,  max]内的元素
 * `zcard key` 返回元素的个数 
 * `zcount key min max` 返回[min, max]区间内元素的数量
-* `zinterstore destination numkeys key1 [key2...] [weights weight [weight...]] [AGGREGATE SUM|MIN|MAX]` 求key1，key2交集，权重分别是weight1,weight2 聚合方法用sum|minmax 结果保存在dest中
+* `zinterstore destination numkeys key1 [key2...] [weights weight [weight...]] [AGGREGATE SUM|MIN|MAX]` 求key1，key2交集，权重分别是weight1,weight2 聚合方法用sum|min|max 结果保存在dest中
 
 ### 哈希结构集合
 
-
+* `hset key value` 设置键值对，如果有就覆盖
+* `hmset key field1 value1 [files2 value2]`  设置多个键值对key = array(field=>value1)
+* `hget key field` 返回key中的field域的值
+* `hmget key field1 field2 fieldN` 返回对应的键值
+* `hgetall key` 返回key中所有的键和值
+* `hdel key field` 删除key中的field域
+* `hlen key` 返回元素量
+* `hexists key field` 判断key中有没有field域
+* `hinrby key field value` 把key中的field域的值增长整型值value
+* `hinrby float key field value` 把key的filed值增长浮点数value
+* `hkeys key` 返回key中所有的field
+* `kvals key` 返回key中所有的value
+* `hkeys user2`  返回所有域
+* `hvalues user2` 返回所有值
 
 
 
