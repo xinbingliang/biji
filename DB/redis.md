@@ -152,7 +152,7 @@ flushdb
 集合拥有无序性，确定性和唯一性的的特点
 
 * `sadd key value1 value2` 向集合key中增加元素
-* `srem value1 value2` 删除集合中集为value1 value2 的元素
+* `srem key value1 value2` 删除集合中集为value1 value2 的元素
 * `spop key` 返回并删除集合中key中1个随机元素
 * `srandmember key` 返回集合key中随机的一个元素
 * `smembers key` 返回集合中的所有元素
@@ -160,8 +160,8 @@ flushdb
 * `scard key` 返回集合中元素的个数
 * `smove source dest value` 将source中的value删除并添加到dest中
 * `sinter key1 key2 key3` 求出三个集合的交集并返回
-* `sinterstore dest key1 key2 key3` 求出多个几个的交集并dest
-* `suion key1 key2 ...` 求出并集并返回
+* `sinterstore dest key1 key2 key3` 求出多个几个的交集并赋值dest
+* `sunion key1 key2 ...` 求出并集并返回
 * `sdiff key1 key2 key3`求出差集并返回
 
 ### 有序集合（order set）
