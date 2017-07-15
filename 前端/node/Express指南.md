@@ -820,6 +820,95 @@ app.use('/login', function(req, res){
 })
 ```
 
+### 文件上传
+
+```javascript
+'use strict';
+
+const express = require('express');
+const fs = require('fs');
+const bodyParser = require('body-parser');
+const multer = require('multer');
+
+let app = express();
+
+app.use(express.static('Public'));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(multer({dest: '/tmp/'}).array('image'))
+
+app.get('/', function(req, res){
+    res.sendFile(__dirname + '/' + 'index.html');
+})
+
+app.post('/file_upload', function(req, res){
+    let response;
+
+    console.log(req.files[0].originalname); 
+    
+
+    let des_file = __dirname + "/" + req.files[0].originalname;
+
+    fs.readFile(req.files[0].path, function(err, data){
+        fs.writeFile(des_file, data, function(err){
+            if(err){
+                console.log(err);
+            } else {
+                response = {
+                    message: 'File uploaded successfully',
+                    filename: req.files[0].originalname
+                };
+            }
+            
+        });
+    })
+    console.log(response);
+    res.end(JSON.stringify(response));
+})
+
+
+var server = app.listen(8080, function () {
+ 
+  var host = server.address().address
+  var port = server.address().port
+ 
+  console.log("应用实例，访问地址为 http://%s:%s", host, port)
+ 
+})
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>文件上传</title>
+</head>
+<body>
+    <form action="/file_upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" size="50">
+        <button type="submit">提交</button>
+    </form>
+</body>
+</html>
+
+```
+
+### cookie
+
+```
+var express      = require('express')
+var cookieParser = require('cookie-parser')
+ 
+var app = express()
+app.use(cookieParser())
+ 
+app.get('/', function(req, res) {
+  console.log("Cookies: ", req.cookies)
+})
+ 
+app.listen(8081)
+```
+
 ## 调试
 
 
