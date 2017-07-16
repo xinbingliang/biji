@@ -200,15 +200,47 @@ flushdb
 
 
 
-
-
 ## 事务
 
+|      | Mysql             | Redis      |
+| ---- | ----------------- | ---------- |
+| 开启   | start transaction | muitl      |
+| 语句   | 普通sql             | 普通命令       |
+| 失败   | rollback回滚        | discard 取消 |
+| 成功   | commit            | exec       |
 
+```
+set wang 200
+set zhao 700
+multi
+decrby zhao 100
+incrby wang 100
+exec 执行队列
+```
+
+### 监视
+
+悲观锁和乐观锁，redis使用乐观锁
+
+* `watch key1 key2` 监视，有一个值变化事务就会取消
+
+```
+set ticket 1
+watch ticket
+multi
+decr ticket
+decrby list 1000
+exec
+```
+
+* `uwatch` 取消监视
 
 ## 消息订阅
 
-
+* `publish news 'message'` 声明频道，发布内容
+* `subscribe news` 订阅频道
+* `psubscribe new*` 订阅一系列频道
+* `pubsub `
 
 ## 持久化
 
