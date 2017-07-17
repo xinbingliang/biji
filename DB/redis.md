@@ -244,9 +244,49 @@ exec
 
 ## 持久化
 
+### rdb(快照持久化)
+
+每隔N分钟或N次写操作后，从内存dump数据形成rdb文件，压缩放到备份目录
+
+**快照导出配置**
+
+* `save 900 1` 刷新快照到硬盘中，必须满足两者要求才会触发，即900秒后至少1个关键字发生变化
+* `stop-writes-on-bgsave-error yes` 后台存储错误停止写
+* `rdbcompression yes` 使用LZF压缩rdb文件
+* `rdbchecksum yes` 存储和加载rdb文件时校验，导入时
+* `dbfilename dump.rdb` 设置rdb文件名
+* `dbfilename dump.rdb` 设置rdb文件名
+* `dir ./` 设置工作目录，rdb文件会写入该目录
+
+**rdb快照缺陷**
+
+* 2个保存点之间会丢失
+
+```
+redis-benchmark -n 10000 执行10000个测试命令
+```
+
+### aof(日志持久化)
+
+记录操作
+
+**配置**
+
+* `appendonly yes`  开启日志
+* `appendfilename /var/xxx.aof` 文件放置在那里
+* `appendfsync everysec` 折中方案每秒写1次
+* `appendfsync no` 写入公共交给操作系统，由操作系统判断缓冲区大小写入到aof同步频率低，速度快。
+* `no-appendfsync-on-rewrite yes` 正在导出rdb快照过程中要不要停止aof
+* `auto-aof-rewrite-percentage 100` 文件大小比起上次重写的增长率100%时重写
+* `auto-aof-rewrite-min-size 64m` aof文件至少超过64M时重写
 
 
-## 集群
+
+
+
+
+
+## 集群(主从复制)
 
 
 
