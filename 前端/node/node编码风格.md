@@ -6,7 +6,7 @@
 
 Sublime Text 2 设置(perfernces > Settings - User)：
 
-```
+```javascript
   "tab_size": 2,
   "translate_tabs_to_spaces": true
 ```
@@ -17,7 +17,7 @@ Sublime Text 2 设置(perfernces > Settings - User)：
 
 Sublime Text 2 设置(perfernces > Settings - User)：
 
-```
+```javascript
   "default_line_ending": "unix"
 ```
 
@@ -27,7 +27,7 @@ Sublime Text 2 设置(perfernces > Settings - User)：
 
 Sublime Text2 设置(perfernces > Settings - User)：
 
-```
+```javascript
   "trim_trailing_white_space_on_save": true
 ```
 
@@ -39,9 +39,8 @@ Sublime Text2 设置(perfernces > Settings - User)：
 
 Sublime Text 2 设置(perfernces > Settings - User)：
 
-```
+```javascript
   "rulers": [80]
-
 ```
 
 多屏：`view > Layout > Columns 2`
@@ -52,13 +51,13 @@ Sublime Text 2 设置(perfernces > Settings - User)：
 
 *Right:*
 
-```
+```javascript
 var foo = 'bar';
 ```
 
 *Wrong:*
 
-```
+```javascript
 var foo = "bar";
 ```
 
@@ -68,7 +67,7 @@ var foo = "bar";
 
 *Right:*
 
-```
+```javascript
 if (true) {
   console.log('winning');
 }
@@ -76,7 +75,7 @@ if (true) {
 
 *Wrong:*
 
-```
+```javascript
 if (true)
 {
   console.log('losing');
@@ -95,13 +94,13 @@ if (true)
 
 *Right:*
 
-```
+```javascript
 var adminUser = db.query('SELECT * FROM users ...');
 ```
 
 *Wrong:*
 
-```
+```javascript
 var admin_user = db.query('SELECT * FROM users ...');
 var a = db.query('SELECT * FROM users ...');
 ```
@@ -112,14 +111,14 @@ var a = db.query('SELECT * FROM users ...');
 
 *Right:*
 
-```
+```javascript
 function BankAccount() {
 }
 ```
 
 *Wrong:*
 
-```
+```javascript
 function bank_Account() {
 }
 ```
@@ -132,7 +131,7 @@ function bank_Account() {
 
 *Right:*
 
-```
+```javascript
 var SECOND = 1 * 1000;
 
 function File() {
@@ -142,7 +141,7 @@ File.FULL_PERMISSIONS = 0777;
 
 *Wrong:*
 
-```
+```javascript
 const SECOND = 1 * 1000;
 
 function File() {
@@ -156,7 +155,7 @@ File.fullPermissions = 0777;
 
 *Right:*
 
-```
+```javascript
 var a = ['hello', 'world'];
 var b = {
   good: 'code',
@@ -166,7 +165,7 @@ var b = {
 
 *Wrong:*
 
-```
+```javascript
 var a = [
   'hello', 'world'
 ];
@@ -181,17 +180,16 @@ var b = {"good": 'code'
 
 *Right:*
 
-```
+```javascript
 var a = 0;
 if (a === '') {
   console.log('winning');
 }
-
 ```
 
 *Wrong:*
 
-```
+```javascript
 var a = 0;
 if (a == '') {
   console.log('losing');
@@ -204,7 +202,7 @@ if (a == '') {
 
 *Right:*
 
-```
+```javascript
 var foo = (a === b)
   ? 1
   : 2;
@@ -212,7 +210,7 @@ var foo = (a === b)
 
 *Wrong:*
 
-```
+```javascript
 var foo = (a === b) ? 1 : 2;
 ```
 
@@ -222,7 +220,7 @@ var foo = (a === b) ? 1 : 2;
 
 *Right:*
 
-```
+```javascript
 var a = [];
 if (!a.length) {
   console.log('winning');
@@ -235,7 +233,7 @@ if (!a.length) {
 
 *Right:*
 
-```
+```javascript
 var isValidPassword = password.length >= 4 && /^(?=.*\d).{4,}$/.test(password);
 
 if (isValidPassword) {
@@ -245,13 +243,13 @@ if (isValidPassword) {
 
 *Wrong:*
 
-```
+```javascript
 if (password.length >= 4 && /^(?=.*\d).{4,}$/.test(password)) {
   console.log('losing');
 }
 ```
 
-```写精简的函数  保持你的函数尽可能的精简。 一个好的函数应该能够在幻灯片上一屏显示，并且让坐在教室最后一排的人看清楚。 别再去数你的每一个函数并控制在15行以内了。
+```javascript
 Array.prototype.empty = function() {
   return !this.length;
 }
@@ -272,7 +270,7 @@ if (a.empty()) {
 
 *Right:*
 
-```
+```javascript
 function isPercentage(val) {
   if (val < 0) {
     return false;
@@ -288,7 +286,7 @@ function isPercentage(val) {
 
 *Wrong:*
 
-```
+```javascript
 function isPercentage(val) {
   if (val >= 0) {
     if (val < 100) {
@@ -304,7 +302,7 @@ function isPercentage(val) {
 
 针对这个示例，甚至可以进一步精简优化：
 
-```
+```javascript
 function isPercentage(val) {
   var isInRange = (val >= 0 && val <= 100);
   return isInRange;
@@ -317,7 +315,7 @@ function isPercentage(val) {
 
 *Right:*
 
-```
+```javascript
 req.on('end', function onEnd() {
   console.log('winning');
 });
@@ -325,7 +323,7 @@ req.on('end', function onEnd() {
 
 *Wrong:*
 
-```
+```javascript
 req.on('end', function() {
   console.log('losing');
 });
@@ -337,7 +335,7 @@ req.on('end', function() {
 
 *Right:*
 
-```
+```javascript
 setTimeout(function() {
   client.connect(afterConnect);
 }, 1000);
@@ -349,7 +347,7 @@ function afterConnect() {
 
 *Wrong:*
 
-```
+```javascript
 setTimeout(function() {
   client.connect(function() {
     console.log('losing');
@@ -363,7 +361,7 @@ setTimeout(function() {
 
 *Right:*
 
-```
+```javascript
 // 'ID_SOMETHING=VALUE' -> ['ID_SOMETHING=VALUE'', 'SOMETHING', 'VALUE']
 var matches = item.match(/ID_([^\n]+)=([^\n]+)/));
 
@@ -382,7 +380,7 @@ if (isSessionValid) {
 
 *Wrong:*
 
-```
+```javascript
 // Execute a regex
 var matches = item.match(/ID_([^\n]+)=([^\n]+)/));
 
@@ -413,13 +411,13 @@ Node 的异步回调函数的第一个参数应该是错误指示，只有这样
 
 *Right:*
 
-```
+```javascript
 function cb(err, data , ...) {...}
 ```
 
 *Wrong:*
 
-```
+```javascript
 function cb(data, ...) {...}
 ```
 
@@ -427,7 +425,7 @@ function cb(data, ...) {...}
 
 尽管有许多的方法来实现继承，但是最为推荐的是 Node 的标准写法：
 
-```
+```javascript
 function Socket(options) {
   // ...
   stream.Stream.call(this);
@@ -443,16 +441,15 @@ util.inherits(Socket, stream.Stream);
 
 *Right:*
 
-```
+```javascript
 child_process.js
 string_decoder.js
 _linklist.js
-
 ```
 
 *Wrong:*
 
-```
+```javascript
 childProcess.js
 stringDecoder.js
 ```
@@ -463,7 +460,7 @@ stringDecoder.js
 
 *Right:*
 
-```
+```javascript
 var add = function (a, b) {
   return a + b;
 };
