@@ -281,18 +281,28 @@ redis-benchmark -n 10000 执行10000个测试命令
 * `auto-aof-rewrite-min-size 64m` aof文件至少超过64M时重写
 
 
-
-
-
+```
+bgrewriteaof //命令aof重写
+```
 
 
 ## 集群(主从复制)
 
+### 作用
 
+* 主从备份防止主机宕机
+* 读写分离，分担master的任务
+* 任务分离，如从服务器分别分担计算工作和备份任务
 
 ## PHP-redis
 
-
+* 复制配置文件两份，并修改pid文件和端口，同时将将主服务不开启rdb，备份服务器开启rdb，一般主服务器依然运行aof
+* 设置从服务器`slaveof  host port`，即指定host本服务器作为主服务器
+* 并设置`slave-read-only yes` 即只读
+* 另外一台关闭rdb和aof，并只读
+* 启用服务器
+* 当组主务器使用密码后，从服务器必须加上密码`masterauth passwd`
+* 从服务器不要同时启动
 
 ## 运维
 
