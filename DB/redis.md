@@ -240,7 +240,8 @@ exec
 * `publish news 'message'` 声明频道，发布内容
 * `subscribe news` 订阅频道
 * `psubscribe new*` 订阅一系列频道
-* `pubsub `
+* `pubsub numsub ` 返回给定频道的订阅者数量
+* `pubsub NUMSUB news。。。` 返回一系列订阅的数量 
 
 ## 持久化
 
@@ -254,7 +255,6 @@ exec
 * `stop-writes-on-bgsave-error yes` 后台存储错误停止写
 * `rdbcompression yes` 使用LZF压缩rdb文件
 * `rdbchecksum yes` 存储和加载rdb文件时校验，导入时
-* `dbfilename dump.rdb` 设置rdb文件名
 * `dbfilename dump.rdb` 设置rdb文件名
 * `dir ./` 设置工作目录，rdb文件会写入该目录
 
@@ -294,15 +294,19 @@ bgrewriteaof //命令aof重写
 * 读写分离，分担master的任务
 * 任务分离，如从服务器分别分担计算工作和备份任务
 
+### 使用
+
+- 复制配置文件两份，并修改pid文件和端口，同时将将主服务不开启rdb，备份服务器开启rdb，一般主服务器依然运行aof
+- 设置从服务器`slaveof  host port`，即指定host本服务器作为主服务器
+- 并设置`slave-read-only yes` 即只读
+- 另外一台关闭rdb和aof，并只读
+- 启用服务器
+- 当组主务器使用密码后，从服务器必须加上密码`masterauth passwd`
+- 从服务器不要同时启动
+
 ## PHP-redis
 
-* 复制配置文件两份，并修改pid文件和端口，同时将将主服务不开启rdb，备份服务器开启rdb，一般主服务器依然运行aof
-* 设置从服务器`slaveof  host port`，即指定host本服务器作为主服务器
-* 并设置`slave-read-only yes` 即只读
-* 另外一台关闭rdb和aof，并只读
-* 启用服务器
-* 当组主务器使用密码后，从服务器必须加上密码`masterauth passwd`
-* 从服务器不要同时启动
+
 
 ## 运维
 
