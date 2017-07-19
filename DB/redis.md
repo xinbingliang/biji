@@ -304,11 +304,45 @@ bgrewriteaof //命令aof重写
 - 当组主务器使用密码后，从服务器必须加上密码`masterauth passwd`
 - 从服务器不要同时启动
 
+## 运维
+
+```
+slowlog-log-slower-than 1000 指定慢日志时间
+slowlog-max-len 128 限制慢日志记录数目
+slowlog get 返回慢命令
+```
+
+* `TIME` 查看时间戳和微秒数
+* `DBSIZE` 查看当前库中key数量
+* `BGREWRIEAOF` 后台进程重写aof
+* `BGSAVE` 后台保存rdb快照
+* `SAVE` 保存rdb快照
+* `LASTSAVE` 上次保存时间
+* `SLAVEOF` 设为slave服务器
+* `FLUSHDB` 清空当前db
+* `FLUSHALL` 清空所有db
+* `SHUTDOWN[""|save|nosave]` 断开连接关闭服务器
+* `SLOWLOG` 显示慢查询
+* `INFO` 显示服务器信息
+* `CONFIG GET`获取配置信息
+* `CONFIG SET` 设置配置信息
+* `MONITOR` 打开控制台
+* `SYNC` 主从同步
+* `CLIENT LIST` 客户端列表
+* `CLIENT KILL` 关闭某个客户端
+* `CLIENT SETNAME` 为客户端设置名字
+* `CLIENT GETNAME` 获取客户端名字
+
+### 备份恢复
+
+* 当遭遇执行清除服务，立即`shutdown nosave`防止重写aof
+* ​
+
 ## PHP-redis
 
 
 
-## 运维
+## 
 
 
 
