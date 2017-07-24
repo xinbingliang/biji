@@ -352,7 +352,12 @@ slowlog get 返回慢命令
 * `redis-server sentinel.cof --sentinel ` 启动监控
 * `slave-priority 100` 在redis配置文件中设置优先级
 
-## Key设计原则
+## Key设计技巧
+
+1. 把表名转化为key前缀
+2. 第二段放置用于区分key的字段,对应mysql中的主键列名
+3. 第三段放置主键值
+4. 第四段存储列名
 
 
 
