@@ -25,3 +25,12 @@
 sudo apt-get -y upgrade
 ```
 
+## 解决vim安装
+
+* apt-get remove vim-common
+
+* apt-get install vim
+
+  ​
+
+  ​
