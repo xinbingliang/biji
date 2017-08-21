@@ -90,7 +90,7 @@ flushdb
 * `ttl site` 查看生命周期
 * `expire site 1000` 将site的声明周期设置为1000秒
 * `pttl site` 毫秒查询
-* `persist site`  毫秒级
+* `PEXPIREAT site 12000`  毫秒级
 * `persist site` 改为永久有效
 
 ## 数据类型
@@ -183,7 +183,7 @@ flushdb
 
 ### 哈希结构集合
 
-* `hset key value` 设置键值对，如果有就覆盖
+* `hset name key value` 设置键值对，如果有就覆盖
 * `hmset key field1 value1 [files2 value2]`  设置多个键值对key = array(field=>value1)
 * `hget key field` 返回key中的field域的值
 * `hmget key field1 field2 fieldN` 返回对应的键值
@@ -358,10 +358,6 @@ slowlog get 返回慢命令
 2. 第二段放置用于区分key的字段,对应mysql中的主键列名
 3. 第三段放置主键值
 4. 第四段存储列名
-
-
-
-
 
 
 
