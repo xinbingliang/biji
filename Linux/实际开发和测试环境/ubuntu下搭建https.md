@@ -30,12 +30,10 @@
 
 * ln -s /etc/apache2/mods-available/rewrite.load  /etc/apache2/mods-enabled/rewrite.load
 
-  ​
-
 * apache2.4
 
   ```
-  AllowOverride All
+  AllowOverride All #是否允许使用.htaccess
   ```
 
   ​

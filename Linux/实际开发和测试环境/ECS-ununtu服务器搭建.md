@@ -78,7 +78,7 @@ apt-get install libapache2-mod-php5 php5 php5-cli php-pear php5-xcache libapache
 
 
 
-* sudo apt-get install libapache2-mod-php5
+* sudo apt-get install libapache2-mod-php5 要和当前使用的php版本对应
 * `apt-get install php5`
 * a2enmod php5
 * `apt-get install php5-mysql`
