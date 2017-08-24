@@ -261,6 +261,7 @@ exec
 **rdb快照缺陷**
 
 * 2个保存点之间会丢失
+* SAVE和BGSAVE都可以执行手动快照
 
 ```
 redis-benchmark -n 10000 执行10000个测试命令
@@ -296,7 +297,7 @@ bgrewriteaof //命令aof重写
 
 ### 使用
 
-- 复制配置文件两份，并修改pid文件和端口，同时将将主服务不开启rdb，备份服务器开启rdb，一般主服务器依然运行aof
+- 复制配置文件两份，并修改pid文件和端口，同时将将主服务不开启rdb，备份服务器开启rdb，一般主服务器依然运行aof，修改端口
 - 设置从服务器`slaveof  host port`，即指定host本服务器作为主服务器
 - 并设置`slave-read-only yes` 即只读
 - 另外一台关闭rdb和aof，并只读
@@ -309,12 +310,12 @@ bgrewriteaof //命令aof重写
 ```
 slowlog-log-slower-than 1000 指定慢日志时间
 slowlog-max-len 128 限制慢日志记录数目
-slowlog get 返回慢命令
 ```
 
+* slowlog get 返回慢命令
 * `TIME` 查看时间戳和微秒数
 * `DBSIZE` 查看当前库中key数量
-* `BGREWRIEAOF` 后台进程重写aof
+* `BGREWRITEAOF` 后台进程重写aof
 * `BGSAVE` 后台保存rdb快照
 * `SAVE` 保存rdb快照
 * `LASTSAVE` 上次保存时间
@@ -324,7 +325,7 @@ slowlog get 返回慢命令
 * `SHUTDOWN[""|save|nosave]` 断开连接关闭服务器
 * `SLOWLOG` 显示慢查询
 * `INFO` 显示服务器信息
-* `CONFIG GET`获取配置信息
+* `CONFIG GET xxx`获取配置信息
 * `CONFIG SET` 设置配置信息
 * `MONITOR` 打开控制台
 * `SYNC` 主从同步

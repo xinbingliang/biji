@@ -346,7 +346,7 @@ router.get('/', function(req, res) {
   res.send('Birds home page');
 });
 // 定义 about 页面的路由
-router.get('/about', function(req, res) {
+router.get('/about', function(req, res) {	//对应多级子目录
   res.send('About birds');
 });
 
@@ -890,7 +890,6 @@ var server = app.listen(8080, function () {
     </form>
 </body>
 </html>
-
 ```
 
 ### cookie
