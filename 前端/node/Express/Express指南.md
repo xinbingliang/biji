@@ -399,10 +399,9 @@ app.use('/user/:id', function(req, res, next) {
 });
 
 
-
 ```
 
-如果需要在中间件栈中跳过剩余中间件，调用 `next('route')`
+如果需要在中间件栈中跳过剩余中间件，调用 `next('route')`，但接下去的路由还是被执行
 
 ```javascript
 // 一个中间件栈，处理指向 /user/:id 的 GET 请求
@@ -510,7 +509,6 @@ var options = {
 }
 
 app.use(express.static('public', options));
-
 ```
 
 每个应用可有多个静态目录。
@@ -532,7 +530,31 @@ var cookieParser = require('cookie-parser');
 
 // 加载用于解析 cookie 的中间件
 app.use(cookieParser());
+
+app.get('/', function(req, res){
+    res.cookie('uid', 1234)
+	//res.clearCookie(name [, options]); // cookie的删除
+    console.log(req.cookies);
+    res.send('8080')
+})
+
 ````
+
+* res.cookie(name, value [, options]);
+
+  * name: 类型为String
+  * value: 类型为String和Object，**如果是Object会在cookie.serialize()之前自动调用JSON.stringify对其进行处理**
+  * Option: 类型为对象，可使用的属性如下
+
+  ````
+  domain：cookie在什么域名下有效，类型为String,。默认为网站域名
+     expires: cookie过期时间，类型为Date。如果没有设置或者设置为0，那么该cookie只在这个这个session有效，即关闭浏览器后，这个cookie会被浏览器删除。
+     httpOnly: 只能被web server访问，类型Boolean。
+     maxAge: 实现expires的功能，设置cookie过期的时间，类型为String，指明从现在开始，多少毫秒以后，cookie到期。
+     path: cookie在什么路径下有效，默认为'/'，类型为String
+     secure：只能被HTTPS使用，类型Boolean，默认为false
+     signed:使用签名，类型Boolean，默认为false。`express会使用req.secret来完成签名，需要cookie-parser配合使用`
+  ````
 
 **使用session**
 
