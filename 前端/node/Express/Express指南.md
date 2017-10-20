@@ -19,6 +19,9 @@ let server = app.listen(8080, function(){
 });
 ````
 
+* `--save-dev` 开发环境
+* `--save` 生产环境的包
+
 ## 应用生成器
 
 通过应用生成器工具 `express` 可以快速创建一个应用的骨架。
@@ -116,6 +119,13 @@ Windows 平台使用如下命令：
 
 7 directories, 9 files
 ```
+
+* `express`
+* `path`
+* `serve-favicon`
+* `morgan` 日志组件
+* `cookie-parser` cookie组件
+* `body-parser`
 
 ## 基本路由
 
