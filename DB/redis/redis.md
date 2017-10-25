@@ -176,7 +176,7 @@ flushdb
 * `zrevrank key memeber` 查询member 的排名(降序0开始)
 * `zrange key start stop [withscores] `集合排序后返回名次[start, stop]的元素,默认升序
 * `zrevrange key start stop` 把集合降序降序排列，取名字[start, stop]之间的元素
-* `zrangebyscore key min max [withscores] limit offset N` 集合(升序)排列后取scre在[min,  max]内的元素
+* `zrangebyscore key min max [withscores] limit offset N` 集合(升序)排列后取scre在[min,  max]内的元素，`ZRANGEBYSCORE salary -inf +inf ` 显示整个有序集合
 * `zcard key` 返回元素的个数 
 * `zcount key min max` 返回[min, max]区间内元素的数量
 * `zinterstore destination numkeys key1 [key2...] [weights weight [weight...]] [AGGREGATE SUM|MIN|MAX]` 求key1，key2交集，权重分别是weight1,weight2 聚合方法用sum|min|max 结果保存在dest中
@@ -191,12 +191,10 @@ flushdb
 * `hdel key field` 删除key中的field域
 * `hlen key` 返回元素量
 * `hexists key field` 判断key中有没有field域
-* `hinrby key field value` 把key中的field域的值增长整型值value
-* `hinrby float key field value` 把key的filed值增长浮点数value
+* `hincrby key field value` 把key中的field域的值增长整型值value
+* `hincrbyfloat key field value` 把key的filed值增长浮点数value
 * `hkeys key` 返回key中所有的field
-* `kvals key` 返回key中所有的value
-* `hkeys user2`  返回所有域
-* `hvalues user2` 返回所有值
+* `hvals key` 返回key中所有的value
 
 
 
@@ -204,7 +202,7 @@ flushdb
 
 |      | Mysql             | Redis      |
 | ---- | ----------------- | ---------- |
-| 开启   | start transaction | muitl      |
+| 开启   | start transaction | multi      |
 | 语句   | 普通sql             | 普通命令       |
 | 失败   | rollback回滚        | discard 取消 |
 | 成功   | commit            | exec       |
