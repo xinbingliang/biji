@@ -300,7 +300,7 @@ bgrewriteaof //命令aof重写
 - 并设置`slave-read-only yes` 即只读
 - 另外一台关闭rdb和aof，并只读
 - 启用服务器
-- 当组主务器使用密码后，从服务器必须加上密码`masterauth passwd`
+- 当组主务器使用密码后，从服务器必须加上密码`masterauth passwd`，主服务通过`requirepass xxx`配置
 - 从服务器不要同时启动
 
 ## 运维
@@ -338,18 +338,6 @@ slowlog-max-len 128 限制慢日志记录数目
 * 删除aof最后三行
 * 重启 
 * `redis-check-dump /var/rdb/` 检查rdb
-
-### sentinel监控
-
-* `sentinel monitor def_master 127.0.0.1 6379 2` 最后一位是尝试次数
-* `sentinel auth-pass def_master 012_345^678-90 ` 密码
-* `<mastername> <millseconds>  `默认为30秒，master被当前sentinel实例认定为“失效”的间隔时间，
-* 如果当前sentinel与master直接的通讯中，在指定时间内没有响应或者响应错误代码，那么当前sentinel就认为master失效(SDOWN，“主观”失效)  
-* `sentinel down-after-milliseconds def_master 30000`当前sentinel实例是否允许实施“failover”(故障转移)，no表示当前sentinel为“观察者”(只参与"投票".不参与实施failover)，全局中至少有一个为yes
-* `sentinel can-failover def_master yes` 监控到master失效，是否切换，只有一台为yes，即自己切换为master
-* `sentinel notification-script mymaster /var/redis/notify.sh`
-* `redis-server sentinel.cof --sentinel ` 启动监控
-* `slave-priority 100` 在redis配置文件中设置优先级
 
 ## Key设计技巧
 
