@@ -56,7 +56,7 @@ PubkeyAuthentication yes
 
 ### 生成RSA
 
-* ssh-keygen 生成公钥和私钥(可以使用工具)
+* ssh-keygen 生成公钥和私钥(可以使用工具)(RSA)
 * 将公钥文件保存在对应需要登录用户的家目录(.ssh/authorized_keys)中
 * 私钥保存在自己本地家目录中
 * `service ssh restart`
@@ -72,9 +72,32 @@ PubkeyAuthentication yes
 * `apt-get install apache2 `
 
 
-### 安装mysql相关文件
+### 安装nginx
+
+* `apt-get install nginx`
+
+### 安装PHP相关文件
 
 apt-get install libapache2-mod-php5 php5 php5-cli php-pear php5-xcache libapache2-mod-perl2 libapache2-mod-auth-mysql php5-mysql php5-mcrypt
+
+````
+apt-get install software-properties-common python-software-properties 
+add-apt-repository ppa:ondrej/php
+sudo apt-get update
+apt-get install php5.6
+apt-get install php5.6-fpm php5.6-gd php5.6-mbstring php5.6-mysql php5.6-zip php5.6-xml php5.6-mcrypt 
+````
+
+```
+location ~ .php$ {
+  root /var/www/php;
+  #fastcgi_pass 127.0.0.1:9000;
+  fastcgi_pass unix:/run/php/php5.6-fpm.sock;
+  fastcgi_index index.php;
+  fastcgi_param SCRIPT_FILENA	ME $document_root$fastcgi_script_name;
+  include fastcgi_params;
+}
+```
 
 
 
