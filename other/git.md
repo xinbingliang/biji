@@ -45,3 +45,6 @@
 * 创建`.gitignore`并提交，将忽略某些文件不提交
 
 
+`git config --global core.autocrlf false` 避免windows下换行符与Unix系列的区别
+
+`git config --global core.longpaths true` 防止git路径过深带来的问题
