@@ -85,18 +85,19 @@ apt-get install software-properties-common python-software-properties
 add-apt-repository ppa:ondrej/php
 sudo apt-get update
 apt-get install php5.6
-apt-get install php5.6-fpm php5.6-gd php5.6-mbstring php5.6-mysql php5.6-zip php5.6-xml php5.6-mcrypt 
+apt-get install php5.6-fpm php5.6-gd php5.6-mbstring php5.6-mysql php5.6-zip php5.6-xml php5.6-mcrypt php5.6-redis 
 ````
 
 ```
-location ~ .php$ {
-  root /var/www/php;
-  #fastcgi_pass 127.0.0.1:9000;
-  fastcgi_pass unix:/run/php/php5.6-fpm.sock;
-  fastcgi_index index.php;
-  fastcgi_param SCRIPT_FILENA	ME $document_root$fastcgi_script_name;
-  include fastcgi_params;
-}
+
+	location ~ .php$ {
+		root /var/www/php;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_pass unix:/run/php/php5.6-fpm.sock;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		include fastcgi_params;
+	}
 ```
 
 
