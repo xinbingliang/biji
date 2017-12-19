@@ -347,6 +347,16 @@ slowlog-max-len 128 限制慢日志记录数目
 4. 第四段存储列名
 
 
+| userid | username | password |
+| ------ | -------- | -------- |
+| 9      | lisi     | 123456   |
+
+* `user:userid:9:username lisi`
+
+* `user:userid:9:password 123456`
+
+  对`user:userid:9`做hash后做分布式
+
 
 ## PHP-redis
 
