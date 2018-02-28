@@ -43,16 +43,82 @@
 
 * 一般重要数据设置一个is_delete的列，类型为bit，表示逻辑删除
 
-##创建表
+##创建库和表
 
 * `select version();` 查看数据库版本
+
 * `select now();` 查看当前时间
-* `create database 数据库 charset=utf-8;` 创建数据库 
+
+* `create database 数据库 charset=utf8;` 创建数据库 
+
 * `drop database 数据库名;` 删除数据库
+
 * `use 数据库名;` 切换数据
+
 * `select database();` 参看当前选择的数据库
 
+* 创建表
+
+  ````sql
+  create table 表名称 (列及类型) ;
+  create table students(
+  	id int auto_increment primary key, 
+  	sname varchar(10) not null
+  );
+  ````
+
+* 修改表
+
+  ````
+  alter table 表名 add|change|drop 列名 类型;
+  alter table students add birthday datetime;
+  ````
+
+* 查询表结构
+
+  ```
+  desc students;
+  ```
+
+* 删除表
+
+  ```
+  drop table 表名;
+  ```
+
+* 更改表名称
+
+  ```
+  rename table 原表名 to 新表名;
+  ```
+
+* 查看表的创建语句
+
+  ````
+  show create table 表名;
+  ````
+
 ## 增加、修改、删除
+
+* 查询
+
+  ````
+  select *  from 表名
+  ````
+
+* 增加
+
+  ````
+  全列插入：insert into 表名 values(...)
+  缺省插入：insert into 表名
+
+  ````
+
+  ​
+
+* 修改
+
+* 删除
 
 
 
