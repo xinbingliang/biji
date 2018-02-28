@@ -111,18 +111,51 @@
   ````
   全列插入：insert into 表名 values(...)
   缺省插入：insert into 表名
-
+  同时插入多条数据： insert into 表名 values(...),(...);
+  或insert into 表名(列1， ...) values (值1, ...),(值1， ...);
   ````
-
-  ​
 
 * 修改
 
+  ```
+  update 表名 set 列1=值1，....where 条件
+  ```
+
 * 删除
+
+  ```
+  delete from 表名 where 条件
+  ```
 
 
 
 ## 备份恢复
+
+### 数据备份
+
+1. 进入超级管理员
+
+   ```
+   sudo -s
+   ```
+
+2. 进入`mysql`库目录
+
+   ```
+   cd /var/lib/mysql
+   ```
+
+3. 运行`mysqldump`命令
+
+   ```
+   mysqldump -u root -p 数据库名称 > ~/mysql/back.sql
+   ```
+
+### 数据恢复
+
+```
+mysql -u root -p py31 < ~/mysql/back.sql
+```
 
 
 

@@ -124,10 +124,39 @@
 
 多个容器共享一个`net Namespace`
 
-* 33.12
+![](./other-container.png)
+
+容器的ip和mac地址完全一模一样，常用于容器之间网络访问异常频繁的情况
+
+* 与宿主机网络空间隔离
+* 容器之间共享网络空间
+* 适合容器间的网络通信频繁
+* 测试使用
+  * `docker run -it --name csphere busybox sh` 
+  * `ifconfig`
+  * `docker run -it --name csphere-con --net=container:csphere busybox sh` 使用cspere的网络来创建容器
+  * `ifconfig`
 
 ### none
 
+无网络配置，可以自行配置，
+
+实际使用
+
+* `docker run -it --name csphere-none --net=none busybox sh`
+* `ifconfig`
+
 ### overlay
+
+![](./overlay.png)
+
+* `docker rm -f $(docker ps -a -q)` 删除所有容器
+* 跨主机通信
+* 无需做端口管理
+* 无序担心IP冲突
+
+### 实践
+
+* ​
 
 ##跨主机通信
