@@ -43,11 +43,30 @@ RUN echo "<h1>Hello, Docker!</h1>" > /usr/share/nginx/html/index.html
 
 #### COPY 复制文件
 
+`COPY` 指令将从构建上下文目录中 `<源路径>` 的文件/目录复制到新的一层的镜像内的 `<目标路径>` 位置
+
+* `COPY <源路径>... <目标路径>`
+* `COPY ["<源路径1>",... "<目标路径>"]`
+* `COPY package.json /usr/src/app/`
+
 #### ADD 更高级的复制文件
+
+和`copy`命令类似，可以使用`URL`，
+
+* `ADD ubuntu-xenial-core-cloudimg-amd64-root.tar.gz /` 
 
 #### CMD 容器启动命令
 
+用于执行命令，当运行时指定的命令参数会取代指定
+
+- `shell` 格式：`CMD <命令>`
+- `exec` 格式：`CMD ["可执行文件", "参数1", "参数2"...] `推荐使用的，一定要使用双引号 `"`
+- 参数列表格式：`CMD ["参数1", "参数2"...]`。在指定了 `ENTRYPOINT` 指令后，用 `CMD` 指定具体的参数。
+- `CMD ["nginx", "-g", "daemon off;"]`不能使用`CMD service nginx start`，会制导致执行后立即退出的问题，而是应该让程序直接在前台执行
+
 #### ENTRYPOINT 入口点
+
+和CMD作用一样都是在指定容器启动程序及参数，`ENTRYPOINT` 在运行时也可以替代，不过比 `CMD` 要略显繁琐，需要通过 `docker run` 的参数 `--entrypoint` 来指定。作用1：在run时使指定的参数当中参数发送给命令。2：容器在启动前做一些准备，将准备命令写成脚本，在容器构架完成后执行
 
 #### ENV 设置环境变量
 
