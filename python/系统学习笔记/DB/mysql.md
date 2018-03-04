@@ -119,6 +119,7 @@
 
   ```
   update 表名 set 列1=值1，....where 条件
+  update subject set isdelete where title in ('linux', 'redis')
   ```
 
 * 删除
@@ -156,6 +157,109 @@
 ```
 mysql -u root -p py31 < ~/mysql/back.sql
 ```
+
+## 查询
+
+### 消除重复的行
+
+* `select distinct gender from student;`消除重复的行
+
+
+### 模糊查询
+
+* `like` 
+* % 表示任意多个任意字符
+* _ 表示任意一个字符
+
+### 范围查询
+
+* in 表示在一个非连续的范围
+* `between ... and ...` 表示一个连续的范围
+  * `select * from student where id between 3 and 8` 查询数据在3到8之间
+
+### 空判断
+
+* null和''不同
+* `is null`判断空
+* `is not null` 判断不为空
+
+### 聚合
+
+* `count(*)` 计算总行数
+* `max(列)` 表示列最大值
+* `min(列)` 表示列最小值
+* `sum(列)` 求列和
+* `avg(列)` 平均值
+
+### 分组
+
+* `select 列1，列2，列3 聚合.... from 表名 group by 列1， 列2,....` 分组条件可以出现在结果集中
+  * `select gender as 性别，count(*) from students group by gender;` 查询男女生人数
+* `select 列1， 列2， 聚合... from 表名 group by 列1， 列2，列3... having 列1，...聚合.. ` 分组后的筛选结果集
+  * `select gender,count(*) from students group by gender having count(*) > 0;`
+
+### 排序
+
+* `select * from 表名 order by 列1 asc|desc, 列2 asc|desc` `asc`小到大，`desc`大到小
+
+### 分页
+
+* `select * from 表名 limit start, count` start 指开始从0记录，count指记录数
+
+##高级
+
+### 关系表
+
+* 外键约束，会检查数据有效性
+* 级联操作
+  * `restrict(限制)` 默认值，抛出异常
+  * `cascade(级联)` 如果主表记录删除，则从表中相关联的记录都将被删除
+  * `set null`  将外键设置为空
+  * `no action` 什么都不做
+
+### 连接查询
+
+* `select syudents.name,subjects.title,scores.score from scores inner join students on scores.stuid = students.id inner subjects on scores.subid = subjects.id;` 
+* `inner join` 都有的才会出现 
+* `left join`左表中的都会出现
+* `right join` 右边中的都会出现
+
+### 自关联
+
+* 外键关联到自身某个字段
+
+### 视图
+
+* `create view students as select students.*, scores.score from scores inner join students on  scores.stuid = students.id;` 
+* `create view v_stu_so as select syudents.name,subjects.title,scores.score from scores inner join students on scores.stuid = students.id inner subjects on scores.subid = subjects.id;`
+* `select * from v_stu_so`
+
+### 事务
+
+* `begin` 开始事务
+* `update students set name='小郭' where id=1`
+* `commit`
+* `rollback` 回滚
+
+### 索引
+
+* `set profilling=1` 设置语句时间查询
+* `show profiles` 查看上条语句执行时间
+* `show index from areas` 查看索引
+
+##python使用mysql
+
+### 安装和引入模块
+
+* `sudo apt-get install python-mysqldb`
+* ​
+
+
+
+
+
+
+
 
 
 

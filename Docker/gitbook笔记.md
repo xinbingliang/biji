@@ -223,6 +223,60 @@ RUN echo "<h1>Hello, Docker!</h1>" > /usr/share/nginx/html/index.html
 
 ###私有仓库高级配置
 
+#### 准备站点证书
+
+1. `openssl genrsa -out "root-ca.key" 4096` 创建`CA`私钥
+2. ` openssl req -new -key "root-ca.key" -out "root-ca.csr" -sha256 -subj '/C=CN/ST=hubei/L=wuhan/O=dailaoer/CN=wuhandailaokeji'` 利用私钥创建 `CA` 根证书请求文件
+   *  `-subj` 参数里的 `/C` 表示国家，如 `CN`；
+   * `/ST` 表示省；
+   * `/L` 表示城市或者地区；
+   * `/O` 表示组织名；
+   * `/CN` 通用名称
+3. 配置 `CA` 根证书，新建 `root-ca.cnf`
+
+```
+[root_ca]
+basicConstraints = critical,CA:TRUE,pathlen:1
+keyUsage = critical, nonRepudiation, cRLSign, keyCertSign
+subjectKeyIdentifier=hash
+```
+
+4. `openssl genrsa -out 'dcoker.domain.com.key' 4096`生成站点 `SSL` 私钥。
+
+5. `openssl req -new -key "docker.domain.com.key" -out "site.csr" -sha256 -subj '/C=CN/ST=hubei/L=wuhan/O=dailaoer/CN=wuhandailaokeji'`使用私钥生成证书请求文件
+
+6. 配置证书，新建 `site.cnf` 文件
+
+   ```
+   [server]
+   authorityKeyIdentifier=keyid,issuer
+   basicConstraints = critical,CA:FALSE
+   extendedKeyUsage=serverAuth
+   keyUsage = critical, digitalSignature, keyEncipherment
+   subjectAltName = DNS:docker.domain.com, IP:127.0.0.1
+   subjectKeyIdentifier=hash
+   ```
+
+7. `openssl x509 -req -days 750 -in "site.csr" -sha256 -CA "root-ca.crt" -CAkey "root-ca.key"  -CAcreateserial -out "docker.domain.com.crt" -extfile "site.cnf" -extensions server`签署站点 `SSL` 证书
+
+8. 新建 `ssl` 文件夹并将 `docker.domain.com.key` `docker.domain.com.crt` 这两个文件移入，删除其他文件
+
+这样已经拥有了 `docker.domain.com` 的网站 SSL 私钥 `docker.domain.com.key` 和 SSL 证书 `docker.domain.com.crt`
+
+#### 配置私有仓库
+
+#### 生成http认证文件
+
+#### 编辑docker-compose.yml
+
+#### 修改host
+
+#### 启动
+
+#### 测试私钥仓库功能
+
+#### 注意事项 
+
 ## 数据管理
 
 ## 使用网络
