@@ -251,16 +251,85 @@ mysql -u root -p py31 < ~/mysql/back.sql
 
 ### 安装和引入模块
 
-* `sudo apt-get install python-mysqldb`
-* ​
+* `sudo apt-get install python-mysqldb` 安装`mysql`模块，在`python3`中叫`pymysql`
+* `import MySQLdb`  引入包
 
 
+###连接对象
+
+* `conn = connect(参数列表)` 默认开启事务
+  * `host` 连接到的主机
+  * `port` 端口
+  * `db` 数据库名称
+  * `user` 用户名
+  * `passwd` 密码
+  * `charset` 改变编码
+* `close()` 关闭连接
+* `commit()` 提交事务
+* `rollback()` 放弃之前的操作
+* `cursor()` 返回Cursor对象 ，用于执行sql语句并返回结果
+
+### cursor对象
+
+* `cursor = conn.cursor()` 调用 `cursor()`方法
+  * `close()` 关闭
+  * `execute()` 执行语句，返回受到影响的行数
+  * `fetchone()` 执行查询语句时，获得结果集的第一行数据，返回一个元组
+  * `next()` 执行查询语句时，获取当前行的下一行
+  * `fetchall()` 执行查询时，获取结果集中所有行，一行构成一个元组
+  * `scroll()` 将指针移动到某个位置
+    * mode 表示移动的方式
+      * `relative`默认值，表示相对当前行移动，正向下移动，负向上移动
+    * `absolute` 表示基于第一条数据的位置，第一条数据位置为0
 
 
+###对象的属性
 
+- rowcount只读属性，表示最近一次execute()执行后受影响的行数
+- connection获得当前连接对象
 
+### 增改删
 
+```python
+#encoding=utf-8
+import MySQLdb
 
+try:
+    conn = MySQLdb.connect(host='127.0.0.1', port=3306, db='test1', user='root', passwd='123456', charset='utf8');
+    cs1=conn.cursor()
+    count=cs1.execute("insert into students(name) values('张良')")
+    print count
+    conn.commit()
+    cs1.close()
+    conn.close()
+except Exception,e:
+    print e.message
+```
+
+参数化目的就是为了防止sql注入
+
+```python
+#encoding=utf-8
+import MySQLdb
+try:
+    conn=MySQLdb.connect(host='localhost',port=3306,db='test1',user='root',passwd='mysql',charset='utf8')
+    cs1=conn.cursor()
+    sname=raw_input("请输入学生姓名：")
+    params=[sname]
+    count=cs1.execute('insert into students(sname) values(%s)',params) # 不管类型都用%s占位
+    print count
+    conn.commit()
+    cs1.close()
+    conn.close()
+except Exception,e:
+    print e.message
+```
+
+### 查询
+
+### 封装
+
+###用户登录
 
 
 
