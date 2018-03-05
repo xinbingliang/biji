@@ -228,10 +228,10 @@ RUN echo "<h1>Hello, Docker!</h1>" > /usr/share/nginx/html/index.html
 1. `openssl genrsa -out "root-ca.key" 4096` 创建`CA`私钥
 2. ` openssl req -new -key "root-ca.key" -out "root-ca.csr" -sha256 -subj '/C=CN/ST=hubei/L=wuhan/O=dailaoer/CN=wuhandailaokeji'` 利用私钥创建 `CA` 根证书请求文件
    *  `-subj` 参数里的 `/C` 表示国家，如 `CN`；
-   * `/ST` 表示省；
-   * `/L` 表示城市或者地区；
-   * `/O` 表示组织名；
-   * `/CN` 通用名称
+   *  `/ST` 表示省；
+   *  `/L` 表示城市或者地区；
+   *  `/O` 表示组织名；
+   *  `/CN` 通用名称
 3. 配置 `CA` 根证书，新建 `root-ca.cnf`
 
 ```
@@ -279,7 +279,105 @@ subjectKeyIdentifier=hash
 
 ## 数据管理
 
+### 数据卷
+
+类似于`Linux`中的挂载
+
+* 数据卷可以在容器之间共享和重用
+* 对数据卷的修改会立马生效
+* 对数据卷的更新，不会影响镜像
+* 数据卷会一直存在，即便容器被删除
+
+#### 创建数据卷
+
+* `docker volume create my-vol` 创建一个数据卷
+* `docker volume ls` 查看所有数据卷
+* `docker volume inspect my-vol` 查看指定数据卷的信息
+
+#### 启动一个挂载数据卷的容器
+
+使用 `--mount` 标记来将 `数据卷` 挂载到容器里。在一次 `docker run` 中可以挂载多个 `数据卷`
+
+* `docker run -d -P --name web -v my-vol:/wepapp training/webapp python app.py` 创建一个名为 `web` 的容器，并加载一个 `数据卷` 到容器的 `/webapp` 目录
+
+#### 查看数据卷的具体信息
+
+* `docker inspect web` 查看`web` 的信息
+
+````
+"Mounts": [ # 数据卷信息
+    {
+        "Type": "volume",
+        "Name": "my-vol",
+        "Source": "/var/lib/docker/volumes/my-vol/_data",
+        "Destination": "/app",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+    }
+],
+````
+
+#### 删除数据卷
+
+* `docker volume rm my-vol` 删除数据卷
+* `docker rm -v` 删除容器时同时移除数据卷
+* `docker volume prune` 清理无主数据卷
+
+### 监听主机目录
+
+#### 挂载一个主机目录作为数据卷
+
+* `docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py` 将本地的一个目录挂载到容器中的`/opt/webapp`上，`-v`不存在的本地目录将被创建
+* `docker run -d -P --name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py` 以只读形式挂载一个目录，试图再容器中进行写操作会被禁止
+
+#### 挂载一个本地主机文件作为数据卷
+
+* `docker run --rm -it -v $HOME/.bash_history:/root/.bash_history ubuntu:17.10 bash`记录bash操作命令到某个文件
+
 ## 使用网络
+
+### 外部访问容器
+
+####随机映射
+
+* `docker run -d -P training/webapp python app.py` 会随机映射一个的端口到内部容器开放的网络端口
+* `docker container ls` 查看端口映射
+* `-p` 标记可以多次使用来绑定多个端口
+
+#### 指定映射
+
+* `docker run -d -p 5000:5000 training/webapp python app.py` 
+
+#### 指定特定地址
+
+* `docker run -d -p 127.0.0.1:5000:5000 training/webapp python app.py`
+
+####映射到指定地址的任意端口
+
+* `docker run -d -p 127.0.0.1::5000 training/webapp python app.py` 用 `ip::containerPort` 绑定 localhost 的任意端口到容器的 5000 端口，本地主机会自动分配一个端口
+
+#### 查看当前端口配置
+
+* `docker port nostalgic_morse 5000`使用 `docker port` 来查看当前映射的端口配置，也可以查看到绑定的地址
+
+### 容器互联
+
+#### 新建网络
+
+* `docker network create -d bridge my-net` 创建一个新的 Docker 网络
+
+####连接容器
+
+* `docker run -it --rm --name busybox1 --network my-net busybox sh` 运行一个容器并连接到新建的 `my-net` 网络
+* `docker run -it --rm --name busybox2 --network my-net busybox sh`
+* `ping busybox2` 在同一个网段
+
+### 配置DNS
+
+* `mount` 查看挂载信息
+* `/etc/docker/daemon.json` 配置全部容器
 
 ## 高级网络
 
