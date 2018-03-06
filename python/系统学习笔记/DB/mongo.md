@@ -161,7 +161,31 @@ db.stu.find({age:{$gte:18}})
 
 #### limit与Skip
 
+**Limit**
 
+* 方法limit()：用于读取指定数量的文档，NUMBER表示要获取文档的条数
+
+  ```
+  db.user.find().limit(2)
+  ```
+
+**skip**
+
+* 方法skip()：用于跳过指定数量的文档
+
+  ```
+  db.stu.find().skip(2)
+  ```
+
+**一起使用**
+
+````
+for(i=0;i<15;i++){db.t1.insert({_id:i})}
+
+db.stu.find().limit(4).skip(5)
+或
+db.stu.find().skip(5).limit(4)
+````
 
 #### 投影
 
