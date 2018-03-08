@@ -189,31 +189,301 @@ db.stu.find().skip(5).limit(4)
 
 #### 投影
 
+* 设置为1显示，设置为0不显示
 
+```
+db.user.find({},{name:1, gender:1})
+db.user.find({},{_id:0, name:1, gender:1})
+```
 
 #### 排序
 
+* 1为升序，-1 为降序
 
+```
+db.stu.find().sort({gender:-1,age:1}) # 根据性别降序，再根据年龄升序
+```
 
 #### 统计个数
 
+* `db.集合名称.find({条件}).count()`
+* `db.集合名称.count({条件})`
 
+```
+db.stu.find({gender:1}).count()
+db.stu.count({age:{$gt:20},gender:1})
+```
 
 #### 消除重复
 
+* `db.集合名称.distinct('去重字段',{条件})`方法distinct()对数据进行去重
 
+```
+db.stu.distinct('gender',{age:{$gt:18}}) # 即对盖字段类型数据，在此范围内只有两种结果
+```
 
-##高级
+##高级操作
 
 ###聚合
 
+* `db.集合名称.aggregate([{管道:{表达式}}])`主要用于计算数据，类似sql中的sum()、avg()
+
+#### 管道
+
+- `$group`：将集合中的文档分组，可用于统计结果
+- `$match`：过滤数据，只输出符合条件的文档
+- `$project`：修改输入文档的结构，如重命名、增加、删除字段、创建计算结果
+- `$sort`：将输入文档排序后输出
+- `$limit`：限制聚合管道返回的文档数
+- `$skip`：跳过指定数量的文档，并返回余下的文档
+- `$unwind`：将数组类型的字段进行拆分
+
+####表达式
+
+- `$sum`：计算总和，$sum:1同count表示计数
+- `$avg`：计算平均值
+- `$min`：获取最小值
+- `$max`：获取最大值
+- `$push`：在结果文档中插入值到一个数组中
+- `$first`：根据资源文档的排序获取第一个文档数据
+- `$last`：根据资源文档的排序获取最后一个文档数据
+
+#### $group
+
+- 将集合中的文档分组，可用于统计结果，_id表示分组的依据，使用某个字段的格式为'$字段'
+
+  ````
+  # 统计男生、女生的总人数
+  db.stu.aggregate([
+      {$group:
+          {
+              _id:'$gender',
+              counter:{$sum:1}
+          }
+      }
+  ])
+  ````
+
+  ````
+  # 将集合中所有文档分为一组，求学生总人数、平均年龄
+  db.stu.aggregate([
+      {$group:
+          {
+              _id:null,
+              counter:{$sum:1},
+              avgAge:{$avg:'$age'}
+          }
+      }
+  ])
+  ````
+
+  ```
+  # 统计学生性别及学生姓名
+  db.stu.aggregate([
+      {$group:
+          {
+              _id:'$gender',
+              name:{$push:'$name'}
+          }
+      }
+  ])
+  ```
+
+  ```
+  # 使用$$ROOT可以将文档内容加入到结果集的数组中
+  db.user.aggregate([
+     {$group: {_id: "$gender", counter: {$push: '$$ROOT'}}}
+  ])
+  ```
+
+#### $match
+
+用于过滤数据，只输出符合条件的文档
+
+````
+# 查询年龄大于20的学生
+db.stu.aggregate([
+    {$match:{age:{$gt:20}}}
+])
+````
+
+```
+# 查询年龄大于20的男生、女生人数
+db.stu.aggregate([
+    {$match:{age:{$gt:20}}}, # 管道1
+    {$group:{_id:'$gender',counter:{$sum:1}}} # 管道2
+]) 
+```
+
+#### project
+
+修改输入文档的结构，如重命名、增加、删除字段、创建计算结果。筛选出指定的字段
+
+````
+db.stu.aggregate([
+    {$project:{_id:0,name:1,age:1}}
+])
+````
+
+```
+db.stu.aggregate([
+    {$group:{_id:'$gender',counter:{$sum:1}}},
+    {$project:{_id:0,counter:1}}
+])
+```
+
+#### $sort
+
+将输入文档排序后输出
+
+```
+# 查询学生信息，按年龄升序
+db.stu.aggregate([{$sort:{age:1}}])
+```
+
+````
+# 查询男生、女生人数，按人数降序
+db.stu.aggregate([
+    {$group:{_id:'$gender',counter:{$sum:1}}},
+    {$sort:{counter:-1}}
+])
+````
+
+#### `$limit`、$skip
+
+```
+db.stu.aggregate([{$limit:2}])
+
+db.stu.aggregate([
+    {$group:{_id:'$gender',counter:{$sum:1}}},
+    {$sort:{counter:1}},
+    {$skip:1},
+    {$limit:1}
+])
+```
+
+#### $unwind
+
+```
+db.t2.insert({_id:1,item:'t-shirt',size:['S','M','L']})
+db.t2.aggregate([{$unwind:'$size'}]) # 发现对于空数组、无字段、null的文档，都被丢弃了
+```
+
+````
+db.t3.aggregate([{$unwind:{path:'$sizes',preserveNullAndEmptyArrays:true}}]) # 保留空数组、无字段、null的文档
+
+db.t3.aggregate([
+{$group: {_id:'$gender', counter:{$sum:1}, docs: {$push:'$$ROOT'}}},
+{$project: {_id:0, counter:1, docs:1}},
+{$unwind: {$path: '$docs', preserveNullAndEmptyArrays:true}}
+])
+````
+
 ### 索引
+
+1. 创建大量数据
+
+   ```javascript
+   for(i=1;1<100000;i++){
+       db.t1.insert({name: 'test'+i, age: i})
+   }
+   ```
+
+2. 数据查找性能分析
+
+   * `db.t1.find({name: 'test10000'}).explain('executionStats')` 性能分析，executionStats表示整体查询时间,单位是毫秒
+
+3. 建立索引
+
+   * `db.集合.ensureIndex((属性:1))` 1表示升序，-1表示降序
+
+4. 对索引后性能分析
+
+5. 索引的命令
+
+   * `db.t1.ensureIndex({"name":1},{"unique": true})` 建立唯一索引，实现唯一约束
+   * `db.t1.ensureIndex({name:1, age:1})` 联合索引，对多个属性建立一个索引,按照find()出现的顺序
+   * `db.t1.getIndexs()` 查看文档所有索引
+   * `db.t1.dropIndexs('索引名称')` 删除索引 
 
 ### 安全性
 
+####超级管理员
+
+* 为了更安全的访问mongodb，需要访问者提供用户名和密码，于是需要在mongodb中创建用户
+
+* 采用了角色-用户-数据库的安全管理方式
+
+* 常用系统角色如下：
+
+  - root：只在admin数据库中可用，超级账号，超级权限
+  - Read：允许用户读取指定数据库
+  - readWrite：允许用户读写指定数据库
+
+* 创建超级管理用户
+
+  ```
+  use admin
+  db.createUser({
+      user:'admin',
+      pwd:'123',
+      roles:[{role:'root',db:'admin'}] # db指可操作的数据库
+  })
+  ```
+
+#### 启用安全认证
+
+* 以上操作还不会进行安全认证
+
+* `sudo vi /etc/mongod.conf`
+
+  ```
+  security:
+    authorization: enabled
+  ```
+
+* `sudo service mongod start`重启服务
+
+* ` mongo -u 'admin' -p '123' --authenticationDatabase 'admin'` 连接到数据库，必须指定要连接的数据库
+
+#### 普通用户管理
+
+* 查看当前数据库的用户
+
+  ```
+  use test1
+  show users
+  ```
+
+* 创建普通用户
+
+  ```
+  db.createUser({
+      user:'t1',
+      pwd:'123',
+      roles:[{role:'readWrite',db:'test1'}]
+  })
+  ```
+
+* 终端连接
+
+  ```
+  mongo -u t1 -p 123 --authenticationDatabase test1
+  ```
+
+* 修改用户：可以修改pwd、roles属性
+
+  ```
+  db.updateUser('t1',{pwd:'456'})
+  ```
+
 ### 集群
 
+
+
 ### 备份和恢复
+
+
 
 ##PY交互
 
