@@ -381,6 +381,160 @@ subjectKeyIdentifier=hash
 
 ## 高级网络
 
+### 快速配置指南
+
+其中有些命令选项只有在 Docker 服务启动的时候才能配置，而且不能马上生效。
+
+- `-b BRIDGE` 或 `--bridge=BRIDGE` 指定容器挂载的网桥
+- `--bip=CIDR` 定制 docker0 的掩码
+- `-H SOCKET...` 或 `--host=SOCKET...` Docker 服务端接收命令的通道
+- `--icc=true|false` 是否支持容器之间进行通信
+- `--ip-forward=true|false` 请看下文容器之间的通信
+- `--iptables=true|false` 是否允许 Docker 添加 iptables 规则
+- `--mtu=BYTES` 容器网络中的 MTU
+
+下面2个命令选项既可以在启动服务时指定，也可以在启动容器时指定。在 Docker 服务启动的时候指定则会成为默认值，后面执行 `docker run` 时可以覆盖设置的默认值。
+
+- `--dns=IP_ADDRESS...` 使用指定的DNS服务器
+- `--dns-search=DOMAIN...` 指定DNS搜索域
+
+最后这些选项只有在 `docker run` 执行时使用，因为它是针对容器的特性内容。
+
+- `-h HOSTNAME` 或 `--hostname=HOSTNAME` 配置容器主机名
+- `--link=CONTAINER_NAME:ALIAS` 添加到另一个容器的连接
+- `--net=bridge|none|container:NAME_or_ID|host` 配置容器的桥接模式
+- `-p SPEC` 或 `--publish=SPEC` 映射容器端口到宿主主机
+- `-P or --publish-all=true|false` 映射容器所有端口到宿主主机
+
+### 容器访问控制
+
+通过 Linux 上的 `iptables` 防火墙来进行管理和实现
+
+#### 容器访问外部网络
+
+* 容器要想访问外部网络，需要本地系统的转发支持，检查转发是否打开
+
+  ````shell
+  sysctl net.ipv4.ip_forward
+  net.ipv4.ip_forward = 1
+  ````
+
+* `sysctl -w net.ipv4.ip_forward=1`手动打开，再启动docker指定`--ip-forward=true`，Docker会自动设置系统参数
+
+#### 容器之间的访问
+
+- 容器的网络拓扑是否已经互联。默认情况下，所有容器都会被连接到 `docker0` 网桥上。
+- 本地系统的防火墙软件 -- `iptables` 是否允许通过
+
+1. 访问所有端口
+
+   默认会添加一条转发策略到 iptables 的 FORWARD 链上。策略为通过（`ACCEPT`）还是禁止（`DROP`）取决于配置`--icc=true`（缺省值）还是 `--icc=false`。当然，如果手动指定 `--iptables=false` 则不会添加 `iptables` 规则。
+
+   可见，默认情况下，不同容器之间是允许网络互通的。如果为了安全考虑，可以在 `/etc/default/docker` 文件中配置 `DOCKER_OPTS=--icc=false` 来禁止它
+
+2. 访问指定的端口
+
+   在通过 `-icc=false` 关闭网络访问后，还可以通过 `--link=CONTAINER_NAME:ALIAS` 选项来访问容器的开放端口。
+
+   例如，在启动 Docker 服务时，可以同时使用 `icc=false --iptables=true` 参数来关闭允许相互的网络访问，并让 Docker 可以修改系统中的 `iptables` 规则。
+
+   此时，系统中的 `iptables` 规则可能是类似
+
+   ```
+   $ sudo iptables -nL
+   ...
+   Chain FORWARD (policy ACCEPT)
+   target     prot opt source               destination
+   DROP       all  --  0.0.0.0/0            0.0.0.0/0
+   ...
+
+   ```
+
+   之后，启动容器（`docker run`）时使用 `--link=CONTAINER_NAME:ALIAS` 选项。Docker 会在 `iptable` 中为 两个容器分别添加一条 `ACCEPT` 规则，允许相互访问开放的端口（取决于 `Dockerfile` 中的 `EXPOSE` 指令）。
+
+   当添加了 `--link=CONTAINER_NAME:ALIAS` 选项后，添加了 `iptables` 规则。
+
+   ```
+   $ sudo iptables -nL
+   ...
+   Chain FORWARD (policy ACCEPT)
+   target     prot opt source               destination
+   ACCEPT     tcp  --  172.17.0.2           172.17.0.3           tcp spt:80
+   ACCEPT     tcp  --  172.17.0.3           172.17.0.2           tcp dpt:80
+   DROP       all  --  0.0.0.0/0            0.0.0.0/0
+
+   ```
+
+   注意：`--link=CONTAINER_NAME:ALIAS` 中的 `CONTAINER_NAME` 目前必须是 Docker 分配的名字，或使用 `--name` 参数指定的名字。主机名则不会被识别。
+
+### 端口映射实现
+
+####访问外部
+
+容器所有到外部网络的连接，源地址都会被 NAT 成本地系统的 IP 地址。这是使用 `iptables` 的源地址伪装操作实现的。
+
+查看主机的 NAT 规则。
+
+```
+$ sudo iptables -t nat -nL
+...
+Chain POSTROUTING (policy ACCEPT)
+target     prot opt source               destination
+MASQUERADE  all  --  172.17.0.0/16       !172.17.0.0/16
+...
+
+```
+
+其中，上述规则将所有源地址在 `172.17.0.0/16` 网段，目标地址为其他网段（外部网络）的流量动态伪装为从系统网卡发出。MASQUERADE 跟传统 SNAT 的好处是它能动态从网卡获取地址。
+
+#### 外部访问
+
+容器允许外部访问，可以在 `docker run` 时候通过 `-p` 或 `-P` 参数来启用。
+
+不管用那种办法，其实也是在本地的 `iptable` 的 nat 表中添加相应的规则。
+
+使用 `-P` 时：
+
+```
+$ iptables -t nat -nL
+...
+Chain DOCKER (2 references)
+target     prot opt source               destination
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:49153 to:172.17.0.2:80
+
+```
+
+使用 `-p 80:80` 时：
+
+```
+$ iptables -t nat -nL
+Chain DOCKER (2 references)
+target     prot opt source               destination
+DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:80 to:172.17.0.2:80
+
+```
+
+注意：
+
+- 这里的规则映射了 `0.0.0.0`，意味着将接受主机来自所有接口的流量。用户可以通过 `-p IP:host_port:container_port` 或 `-p IP::port` 来指定允许访问容器的主机上的 IP、接口等，以制定更严格的规则。
+- 如果希望永久绑定到某个固定的 IP 地址，可以在 Docker 配置文件 `/etc/docker/daemon.json` 中添加如下内容。
+
+```
+{
+  "ip": "0.0.0.0"
+}
+```
+
+### 配置docker0网桥
+
+### 自定义网桥
+
+### 工具和示例
+
+### 编辑网络配置文件
+
+### 实例：创建一个点到点连接
+
 ## Compose
 
 ## Machine

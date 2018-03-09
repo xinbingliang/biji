@@ -479,15 +479,168 @@ db.t3.aggregate([
 
 ### 集群
 
+1. 创建两个目录
 
+   ```
+   mkdir t1
+   mkdir t2
+   ```
+
+2. 启动mongod，并设置在同一个副本集下
+
+   ````
+   mongod --bind_ip 192.168.2.79 --port 27017 --dbpath ~/Desktop/t1 --replSet mo0
+   mongod --bind_ip 192.168.2.41 --port 27018 --dbpath ~/Desktop/t2 --replSet mo0
+   ````
+
+3. `mongo --host 192.168.2.79 --port 27017`连接主服务器，此处设置192.168.2.79:27017为主服务器
+
+4. `rs.initiate()`初始化
+
+5. `rs.status()` 查看当前状态
+
+6. `rs.add('192.168.2.41:27018')` 添加副本集
+
+7. `rs.status()` 查看当前状态
+
+8. 主服务写数据
+
+   ```
+   use test1
+   for(i=0;i<10;i++){db.t1.insert({_id:i})}
+   db.t1.find()
+   ```
+
+9. `rs.slaveOk()`从服务器设置从服务可以查询
+
+#### 主从切换
+
+* `rs.remove('192.168.196.128:27018')`删除从节点
+* 关闭主服务器后，再重新启动，会发现原来的从服务器变为了从服务器，新启动的服务器（原来的从服务器）变为了从服务器
 
 ### 备份和恢复
 
+#### 备份
 
+* `mongodump -h dbhost -d dbname -o dbdirectory`
+  * -h：服务器地址，也可以指定端口号
+  * -d：需要备份的数据库名称
+  * -o：备份的数据存放位置，此目录中存放着备份出来的数据
+
+```
+sudo mkdir test1bak
+sudo mongodump -h 192.168.196.128:27017 -d test1 -o ~/Desktop/test1bak
+```
+
+#### 恢复
+
+* `mongorestore -h dbhost -d dbname --dir dbdirectory`
+  * -h：服务器地址
+  * -d：需要恢复的数据库实例
+  * --dir：备份数据所在位置
+
+```
+mongorestore -h 192.168.196.128:27017 -d test2 --dir ~/Desktop/test1bak/test1
+```
 
 ##PY交互
 
+- 点击查看[官方文档](http://api.mongodb.org/python/current/tutorial.html)
+- 安装python包
 
+```
+进入虚拟环境
+sudo pip install pymongo
+或源码安装
+python setup.py
+```
 
+- 引入包pymongo
 
+```
+import pymongo
+```
 
+### 类MongoClient
+
+* 建立连接并创建客户端
+
+````
+无安全认证: client = MongoClient('mongodb://localhost:27017')
+有安全认证: client = MongoClient('mongodb://用户名:密码@localhost:27017/数据库名称')
+````
+
+###类database
+
+* 获得数据库py
+
+````
+db=client.py
+````
+
+### 类Collection
+
+####主要方法
+
+* insert_one
+* insert_many
+* update_one
+* update_many
+* delete_one
+* delete_many
+* find_one
+* find
+
+#### 获得集合
+
+````
+stu = db.stu
+````
+
+#### 添加文档
+
+````
+s1 = {"name": "辛丙亮", "age": "24"}
+s1_id = stu.insert_one(s1).inserted_id
+print s1_id
+````
+
+#### 修改文档
+
+`````
+stu.update_one({"name": "辛丙亮"}, {'$set': {"name": "陈瑶"}})
+`````
+
+#### 删除文档
+
+```
+stu.remove({"name": "陈梦瑶"})
+```
+
+#### 查找一个文档，将文档转化为元组返回
+
+```
+stu.find_one({"name": "辛丙亮"})
+```
+
+####查询多个文档，返回一个Cursor类似的对象，用于遍历，遍历时，每个文档以元组形式返回
+
+```
+cursor = stu.find()
+
+for item in cursor:
+    print item
+```
+
+#### 排序，返回Cursor类型的对象，升序使用ASCENDING(1)，降序使用DESCENDING(-1)
+
+```
+cursor = stu.find().sort('age', ASCENDING)
+cursor = stu.find().sort([('age', ASCENDING), ('name', DESCENDING)])
+```
+
+#### 子集
+
+```
+cursor = stu.find().skip(2).limit(3)
+```
