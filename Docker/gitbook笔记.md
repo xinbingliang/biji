@@ -2,18 +2,18 @@
 
 ##镜像指令
 
-* `coker pull ubuntu:16.04` 从镜像仓库中获得镜像
+* `docker pull ubuntu:16.04` 从镜像仓库中获得镜像
 * `docker run -it --rm ubuntu:16.04 bash` 运行镜像，并在镜像交互结束后删除
 * `docker images` 查看docker镜像
 * `docker system df` 查看镜像、容器、数据卷所占用的空间
 * `docker image ls -f dangling=true` 显示虚悬镜像
 * `docker image prune` 删除虚悬镜像
-* `docker image ls ubuntu` 根据仓库名称列出镜像
-* `docker image ls -f since=mongo:3.2`查看`mongo:3.2`之后建立的镜像
-* `docker image ls -f before=mongo:3.2`查看`mongo:3.2`之前建立的镜像
+* `docker image  ubuntu` 根据仓库名称列出镜像
+* `docker image -f since=mongo:3.2`查看`mongo:3.2`之后建立的镜像
+* `docker image -f before=mongo:3.2`查看`mongo:3.2`之前建立的镜像
 * `docker image rm 50122` 移除一个进行
-* `docker image rm $(docker image ls -q redis)` 删除所有仓库名称为`redis`的镜像
-* `docker image rm $(docker image ls -q -f before=mongo:3.2)` 删除所有在 `mongo:3.2` 之前的镜像
+* `docker image rm $(docker image -q redis)` 删除所有仓库名称为`redis`的镜像
+* `docker image rm $(docker image -q -f before=mongo:3.2)` 删除所有在 `mongo:3.2` 之前的镜像
 * `docker exec -it webserver /bin/bash` 进入到容器的交互式命令中
 * `docker diff` 查看对容器的存储层的改动
 * `docker commit --author 'xinbingliang' --message '修改默认网页' webserver nginx:v2` 将修改后的容器保存为镜像，不建议使用
