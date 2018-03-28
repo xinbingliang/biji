@@ -363,7 +363,7 @@ except Exception,e:
 
 ### 封装 
 
-```sql
+```python
 # encoding=utf8
 import MySQLdb
 
