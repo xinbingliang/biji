@@ -363,7 +363,7 @@ except Exception,e:
 
 ### 封装 
 
-```python
+````python
 # encoding=utf8
 import MySQLdb
 
@@ -426,4 +426,5 @@ class MysqlHelper():
             print e.message
 
         return count
-```
+````
+
