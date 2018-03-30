@@ -76,6 +76,7 @@ io.on('connection', (socket)=>{
 ```
 
 ```html
+//index.html
 <script src="/socket.io/socket.io.js"></script>
 <script>
   let socket = io.connect('http://localhost:3000');
@@ -92,6 +93,7 @@ io.on('connection', (socket)=>{
 ### 系统事件
 
 ````js
+//server.js
 let app = require('express')();
 let server = require('http').Server(app)
 
@@ -164,21 +166,172 @@ function onConnect(socket){
 
 部分客户端接收不到推送的消息不会造成服务受到影响
 
+`````javascript
+//server.js
+let app = require('express')();
+let server = require('http').Server(app)
 
+let io = require('socket.io')(server)
+
+server.listen(3000)
+
+app.get('/', (req, res) => {
+  res.sendfile(__dirname + '/index.html');
+})
+
+io.on('connection', (socket) => {
+  let tweets = setInterval(() => {
+    // getBieberTweet((tweet) => {
+      socket.volatile.emit('bieber tweet', '不稳定的信息')
+    // })
+  }, 1000);
+
+  socket.on('disconnect', () => {
+    clearInterval(tweets)
+  })
+})
+`````
+
+```javascript
+//index.html
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let scoket = io('http://127.0.0.1:3000')
+  scoket.on('connect', () => {
+    console.log('连接到服务端')
+
+    scoket.on('bieber tweet', function (data) {
+      console.log(data)
+    });
+  })
+</script>
+```
 
 ##回调
 
+```javascript
+//server.js
+let app = require('express')();
+let server = require('http').Server(app)
 
+let io = require('socket.io')(server)
+
+server.listen(3000)
+
+app.get('/', (req, res) => {
+  res.sendfile(__dirname + '/index.html');
+})
+
+io.on('connection', (socket) => {
+  socket.on('clientMsg', (name, cb)=>{
+    console.log(name)
+
+    cb('服务端接收到回调')
+  })
+
+  socket.on('disconnect', () => {
+    console.log('客户端断开')
+  })
+})
+```
+
+```html
+//index.html
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let scoket = io('http://127.0.0.1:3000')
+  scoket.on('connect', () => {
+    console.log('连接到服务端')
+
+    scoket.emit('clientMsg', '客户端携带信息', function(data){
+      console.log(data)
+    })
+  })
+</script>
+```
 
 ## 广播
 
+```javascript
+//server.js
+let app = require('express')();
+let server = require('http').Server(app)
 
+let io = require('socket.io')(server)
+
+server.listen(3000)
+
+app.get('/', (req, res) => {
+  res.sendfile(__dirname + '/index.html');
+})
+
+io.on('connection', (socket) => {
+  socket.broadcast.emit('toOther', '给其他用户的信息')
+
+  socket.on('disconnect', () => {
+    console.log('客户端断开')
+  })
+})
+```
+
+````html
+//index.html
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let scoket = io('http://127.0.0.1:3000')
+  scoket.on('connect', () => {
+    console.log('连接到服务端')
+
+    scoket.on('toOther', function(data){
+      console.log(data)
+    })
+  })
+</script>
+````
 
 ###跨浏览器WebSocket
 
+```javascript
+//server.js
+let app = require('express')();
+let server = require('http').Server(app)
 
+let io = require('socket.io')(server)
 
+server.listen(3000)
 
+app.get('/', (req, res) => {
+  res.sendfile(__dirname + '/index.html');
+})
+
+io.on('connection', (socket) => {
+  socket.on('message', function(msg){
+    console.log(msg)
+  })
+
+  socket.send('23333')
+
+  socket.on('disconnect', () => {
+    console.log('客户端断开')
+  })
+})
+```
+
+````html
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let scoket = io('http://127.0.0.1:3000')
+  scoket.on('connect', () => {
+    console.log('连接到服务端')
+
+    scoket.send('hi');
+
+    scoket.on('message', function(msg){
+      console.log('ok')
+    })
+  })
+</script>
+````
 
 ## 命名空间和房间
 
@@ -255,44 +408,525 @@ let news = io.of("/news").on('connection', (socket)=>{
 
 ### 房间
 
+```javascript
+//server.js
+let app = require('express')();
+let server = require('http').Server(app)
 
+let io = require('socket.io')(server)
 
-## 集群
+server.listen(3000)
 
+app.get('/', (req, res) => {
+  res.sendfile(__dirname + '/index.html');
+})
 
+io.on('connection', (socket) => {
+  socket.join('room1')
+
+  io.to('room1').emit('romm1Msg', '来自房间1的消息')
+
+  socket.on('disconnect', () => {
+    console.log('客户端断开')
+  })
+})
+```
+
+```html
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let scoket = io('http://127.0.0.1:3000')
+  scoket.on('connect', () => {
+    scoket.on('romm1Msg', function(msg){
+      console.log(msg)
+    })
+  })
+</script>
+```
+
+* `leave` 离开该频道
+
+Socket.IO 中的每个 `Socket` 都使用一个随机、不可预测、唯一的 `Socket#id` 标识符来标识。为了简便，每个 socket 自动进入一个使用自身 id 标识的房间。
+
+````javascript
+io.on('connection', function(socket){
+  socket.on('say to someone', function(id, msg){
+    socket.broadcast.to(id).emit('my message', msg);
+  });
+});
+````
+
+断开连接时， sockets 会自动 `leave` 所有频道，不需要你做任何处理。
 
 ## 服务端API
 
 ### Server
 
+#### new Server(httpServer[, options])
 
+创建一个`socket`服务器
+
+* httpServer 指被绑定的http服务器
+* options (object) 参数
+  * path (string) 要捕获的路径名称
+  * serverClient (布尔) 是否提供客户端文件(true)
+  * adapter (适配器) 适配器的使用
+  * origins (字符串) 允许的源
+
+````javascript
+let io = require('socket.io')()
+
+let server = require('socket.io')
+let io = new server()
+````
+
+#### new Server(port[, options])
+
+* port (Number) 监听的端口
+* options 参数同上
+
+#### new Server(options)
+
+* options 参数同上
+
+#### server.sockets
+
+* 命名空间
+
+#### server.serveClient([value])
+
+* value(Boolean)
+* 返回值 server|Boolean
+
+````javascript
+// pass a server and the `serveClient` option
+var io = require('socket.io')(http, { serveClient: false });
+
+let io = require('socket.io')()
+let client = io.serveClient(true);
+io.attach(http);
+````
+
+#### server.path([value])
+
+设置静态文件的路径，默认为`/socket.io`
+
+* value (字符串)
+* 返回值 Server|String
+
+#### server.adapter([value])
+
+提供适配器实例
+
+* value (适配器)
+* 返回 Server|Adapter
+
+#### server.origins([value])
+
+设置允许的源
+
+* value (字符串)
+* 返回 Server|String
+
+#### server.origins(fn)
+
+为函数提供两个参数`origin:String`和`callback(error, success)`
+
+* fn (功能)
+* 返回 Server
+
+#### server.attach(httpServer[, options])
+
+附加的服务器
+
+- `httpServer` *（http.Server）*要附加到的服务器
+- `options`
+
+#### server.attach(port[, options])
+
+附加服务器
+
+- `port` *（数字）*要监听的端口
+- `options` 
+
+#### server.listen(httpServer[, options])
+
+同attach()
+
+#### server.listen(port[, options])
+
+同attach()
+
+#### server.bind(engine)
+
+绑定引擎
+
+#### server.onconnection(socket)
+
+创建新的客户端
+
+#### server.of(nsp)
+
+切换到某一命名空间
+
+* nsp (字符串)
+* 返回 命名空间
+
+#### server.close([callback])
+
+关闭socket.io服务器
 
 ### Namespace
 
+#### namespace.name
 
+命名空间标识符
+
+#### namespace.connected
+
+连接到此命名空间对象的哈希，索引为id
+
+#### namespace.emit(eventName[, ...args])
+
+向该命名空间下的连接发送消息
+
+```javascript
+var io = require('socket.io')();
+
+io.emit('an event sent to all connected clients'); // main namespace
+
+var chat = io.of('/chat');
+chat.emit('an event sent to all connected clients in chat namespace');
+```
+
+#### namespace.clients(callback)
+
+获取连接到此名称空间的客户端ID列表
+
+```javascript
+var io = require('socket.io')();
+io.of('/chat').clients(function(error, clients){
+  if (error) throw error;
+  console.log(clients); // => [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
+});
+
+var io = require('socket.io')();
+io.of('/chat').in('general').clients(function(error, clients){
+  if (error) throw error;
+  console.log(clients); // => [Anw2LatarvGVVXEIAAAD]
+});
+
+var io = require('socket.io')();
+io.clients(function(error, clients){
+  if (error) throw error;
+  console.log(clients); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
+});
+```
+
+#### namespace.use(fn)
+
+注册一个中间件
+
+```javascript
+var io = require('socket.io')();
+io.use(function(socket, next){
+  if (socket.request.headers.cookie) return next();
+  next(new Error('Authentication error'));
+});
+```
+
+#### 事件： 'connect'
+
+#### 事件： 'connection'
+
+#### 标志： 'volatile'
+
+#### 标志： 'local'
 
 ### Socket
 
+#### socket.id
 
+唯一标识，来自客户端
+
+#### socket.rooms
+
+客户所在房间的字符串散列
+
+#### socket.client
+
+对基础`client` 对象的引用
+
+#### socket.conn
+
+对底层`client` 传输连接，这允许访问IO传输层，它仍然（大部分）抽象出实际的TCP / IP套接字。
+
+#### socket.request
+
+一个getter代理，用于将引用返回给`request`源自底层engine.io的引用`Client`。用于访问诸如`Cookie`or的请求标头`User-Agent`。
+
+#### socket.use(fn)
+
+注册一个中间件，该中间件是一个函数，可以为每个入站接收`Packet`并作为参数接收数据包，还可以选择将执行延迟到下一个注册的中间件。
+
+```javascript
+var io = require('socket.io')();
+io.on('connection', function(socket){
+  socket.use(function(packet, next){
+    if (packet.doge === true) return next();
+    next(new Error('Not a doge error'));
+  });
+});
+```
+
+#### socket.send([...args][, ack])
+
+发送一个`message`事件。
+
+#### socket.emit(eventName[, ...args][, ack])
+
+- `eventName` *（串）*
+- `args`
+- `ack` *（功能）*
+- **返回** `Socket`
+
+向由字符串名称标识的套接字发出事件。
+
+```javascript
+socket.emit('hello', 'world');
+socket.emit('with-binary', 1, '2', { 3: '4', 5: new Buffer(6) });
+
+var io = require('socket.io')();
+io.on('connection', function(client){
+  client.emit('an event', { some: 'data' });
+
+  client.emit('ferret', 'tobi', function (data) {
+    console.log(data); // data will be 'woot'
+  });
+
+  // the client code
+  // client.on('ferret', function (name, fn) {
+  //   fn('woot');
+  // });
+
+});
+```
+
+#### socket.on(eventName, callback)
+
+- `eventName` *（串）*
+- `callback` *（功能）*
+- **返回** `Socket`
+
+为给定事件注册一个新的处理程序。
+
+```javascript
+socket.on('news', function (data) {
+  console.log(data);
+});
+```
+
+#### socket.join(room[, callback])
+
+向客户端添加客户端`room`，并可选择触发带`err`签名的回调（如果有的话）。
+
+- `room` *（串）*
+- `callback` *（功能）*
+- `Socket`链接**返回**
+
+```javascript
+io.on('connection', function(socket){
+  socket.join('room 237', function(){
+    console.log(socket.rooms); // [ <socket.id>, 'room 237' ]
+    io.to('room 237', 'a new user has joined the room'); // broadcast to everyone in the room
+  });
+});
+
+io.on('connection', function(client){
+  client.on('say to someone', function(id, msg){
+    // send a private message to the socket with the given id
+    client.broadcast.to(id).emit('my message', msg);
+  });
+});
+```
+
+#### socket.join(rooms[, callback])
+
+- `rooms` *（阵列）*
+- `callback` *（功能）*
+- ****`Socket`链接**返回**
+
+将客户端添加到房间列表中，并可选择触发带`err`签名的回调（如果有）。
+
+#### socket.leave(room[, callback])
+
+- `room` *（串）*
+- `callback` *（功能）*
+- ****`Socket`链接**返回**
+
+从中删除客户端`room`，并可选择触发带`err`签名的回叫（如果有的话）。
+
+#### socket.to(room)
+
+- `room` *（串）*
+- ****`Socket`链接**返回**
+
+为后续事件发射设置一个修饰符，该事件只会被*广播*给已加入给定的客户端`room`。
+
+要发射到多个房间，您可以`to`多次拨打电话。
+
+```
+var io = require('socket.io')();
+io.on('connection', function(client){
+  // to one room
+  client.to('others').emit('an event', { some: 'data' });
+  // to multiple rooms
+  client.to('room1').to('room2').emit('hello');
+});
+```
+
+#### socket.in(room)
+
+类on
+
+#### socket.compress(value)
+
+- `value` *（布尔）*是否对后续数据包进行压缩
+- ****`Socket`链接**返回**
+
+为后续事件发射设置修饰符，该事件数据仅在该值为时才被*压缩*`true`。默认为`true`不调用该方法时。
+
+#### socket.disconnect(close)
+
+- `close` *（布尔）*是否关闭底层连接
+- **返回** `Socket`
+
+断开这个客户端。如果close的值是`true`，则关闭底层连接。否则，它只是断开命名空间。
+
+#### 标志： 'broadcast'
+
+广播
+
+#### 标志： 'volatile'
+
+#### 事件： 'disconnect'
+
+#### 事件： 'error'
+
+#### 事件： 'disconnecting'
+
+断线
 
 ### Client
 
+#### client.conn
 
+- *（engine.Socket）*
+
+对底层`engine.io` `Socket`连接的引用。
+
+#### client.request
+
+- *（请求）*
+
+一个getter代理，用于将引用返回给`request`发起engine.io连接的引用。用于访问诸如`Cookie`or的请求标头`User-Agent`。
 
 ## 客户端API
 
 ### io
 
+#### io.protocol
 
+#### io(url[, options])
 
 ### io.Manager
 
+####new Manager(url[, options])
 
+####manager.reconnection([value])
+
+####manager.reconnectionAttempts([value])
+
+####manager.reconnectionDelay([value])
+
+#### manager.reconnectionDelayMax([value])
+
+#### manager.timeout([value])
+
+####manager.open([callback])
+
+#### manager.connect([callback])
+
+####manager.socket(nsp, options)
+
+#### 事件： 'connect_error'
+
+#### 事件： 'connect_timeout'
+
+#### 事件： 'reconnect'
+
+#### 事件： 'reconnect_attempt'
+
+#### 事件： 'reconnecting'
+
+#### 事件： 'reconnect_error'
+
+#### 事件： 'reconnect_failed'
+
+#### 事件： 'ping'
+
+#### 事件： 'pong'
 
 ### io.Socket
 
+#### socket.id
 
+#### socket.open()
+
+#### socket.connect()
+
+#### socket.send([...args][, ack])
+
+#### socket.emit(eventName[, ...args][, ack])
+
+####socket.on(eventName, callback)
+
+####socket.compress(value)
+
+####socket.close()
+
+####socket.disconnect()
+
+####事件： 'connect'
+
+####事件： 'connect_error'
+
+####事件： 'connect_timeout'
+
+####事件： 'error'
+
+####事件： 'disconnect'
+
+####事件： 'reconnect'
+
+####事件： 'reconnect_attempt'
+
+####事件： 'reconnecting'
+
+####事件： 'reconnect_error'
+
+####事件： 'reconnect_failed'
+
+## 集群
 
 
 
 http://javacheng.oschina.io/socket.io/docs/rooms-and-namespaces/
+
+https://blog.csdn.net/sirlzf/article/details/48826137
+
+http://cnodejs.org/topic/543f9484de346cb1644302b5
+
+https://blog.csdn.net/kelong_xhu/article/details/50846483
+
+https://www.oschina.net/translate/websocket-nginx
