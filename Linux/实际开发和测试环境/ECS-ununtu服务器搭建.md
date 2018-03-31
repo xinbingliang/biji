@@ -84,23 +84,19 @@ apt-get install libapache2-mod-php5 php5 php5-cli php-pear php5-xcache libapache
 apt-get install software-properties-common python-software-properties 
 add-apt-repository ppa:ondrej/php
 sudo apt-get update
-apt-get install php5.6
-apt-get install php5.6-fpm php5.6-gd php5.6-mbstring php5.6-mysql php5.6-zip php5.6-xml php5.6-mcrypt php5.6-redis 
+apt-get install php5.6 php5.6-fpm php5.6-gd php5.6-mbstring php5.6-mysql php5.6-zip php5.6-xml php5.6-mcrypt php5.6-redis 
 ````
 
 ```
-
-	location ~ .php$ {
-		root /var/www/php;
-		#fastcgi_pass 127.0.0.1:9000;
-		fastcgi_pass unix:/run/php/php5.6-fpm.sock;
-		fastcgi_index index.php;
-		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		include fastcgi_params;
-	}
+location ~ .php$ {
+  root /var/www/php;
+  #fastcgi_pass 127.0.0.1:9000;
+  fastcgi_pass unix:/run/php/php5.6-fpm.sock;
+  fastcgi_index index.php;
+  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+  include fastcgi_params;
+}
 ```
-
-
 
 * sudo apt-get install libapache2-mod-php5 要和当前使用的php版本对应
 * `apt-get install php5`
@@ -201,10 +197,6 @@ echo mysql_connect('localhost', 'root', 'xIn772333@')?'ok':'error';
   6. `service apache2 restart`
 
 > **注意：** `apache2`和`apache4`的`apache2.conf `内容是不同的，主义修改主目录的时候也要修改该文件
-
-
-
-
 
 [](http://www.mr-wu.cn/aliyun-ecs-ubuntu/)
 
