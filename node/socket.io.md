@@ -837,13 +837,40 @@ io.on('connection', function(client){
 
 #### io.protocol
 
+协议修订号
+
 #### io(url[, options])
+
+使用url创建一个新的对象，并可以进行后续调用
+
+- `url` 字符串
+- `options` 参数
+- **返回** `Socket`
 
 ### io.Manager
 
 ####new Manager(url[, options])
 
+- `url` 字符串
+- options 参数
+  - `path` 捕获的路径名称
+  - `reconnection` （布尔）是否自动重新连接（`true`）
+  - `reconnectionAttempts` *（Number）*放弃之前的重新连接尝试次数（`Infinity`）
+  - `reconnectionDelay` *（数量）*尝试重新连接之前最初等待的时间（`1000`）。受+/-影响`randomizationFactor`，
+    例如默认的初始延迟时间在500到1500毫秒之间。
+  - `reconnectionDelayMax` *（数量）*重新连接之间等待的最长时间（`5000`）。
+    如上所述，每次尝试都将重新连接延迟与随机化一起增加2倍
+  - `randomizationFactor` *（Number）*（`0.5`），0 <= randomizationFactor <= 1
+  - `timeout` *（Number）* a `connect_error`和`connect_timeout`事件发出之前的连接超时（`20000`）
+  - `autoConnect` *（布尔）*通过设置这个错误，你必须打电话，`manager.open`
+    只要你决定它是适当的
+- **返回** `Manager`
+
 ####manager.reconnection([value])
+
+设置是否重新连接，如果没有参数就是获取这一参数
+
+* value 布尔
 
 ####manager.reconnectionAttempts([value])
 
@@ -855,15 +882,34 @@ io.on('connection', function(client){
 
 ####manager.open([callback])
 
+* callback回调函数
+* 返回 Manager
+
+启动一个新的连接尝试
+
 #### manager.connect([callback])
+
+同上
 
 ####manager.socket(nsp, options)
 
+- `nsp` *（串）*
+- `options` *（目的）*
+- **返回** `Socket`
+
+根据命名空间创建一个新的
+
 #### 事件： 'connect_error'
+
+连接遇到错误
 
 #### 事件： 'connect_timeout'
 
+连接超时
+
 #### 事件： 'reconnect'
+
+重新连接
 
 #### 事件： 'reconnect_attempt'
 
@@ -871,9 +917,15 @@ io.on('connection', function(client){
 
 #### 事件： 'reconnect_error'
 
+在重新连接尝试错误时触发
+
 #### 事件： 'reconnect_failed'
 
+在无法重新连接时触发
+
 #### 事件： 'ping'
+
+ping数据包写入服务器时触发
 
 #### 事件： 'pong'
 
@@ -881,21 +933,54 @@ io.on('connection', function(client){
 
 #### socket.id
 
+套接字会话的唯一标识符。
+
+```javascript
+var socket = io('http://localhost');
+
+console.log(socket.id); // undefined
+
+socket.on('connect', function(){
+  console.log(socket.id); // 'G5p5...'
+});
+```
+
 #### socket.open()
+
+打开一个socket
 
 #### socket.connect()
 
+同上
+
 #### socket.send([...args][, ack])
+
+发送一个`message`事件
 
 #### socket.emit(eventName[, ...args][, ack])
 
+发送一个定义事件
+
+```
+socket.emit('hello', 'world');
+socket.emit('with-binary', 1, '2', { 3: '4', 5: new Buffer(6) });
+```
+
 ####socket.on(eventName, callback)
+
+监听事件
 
 ####socket.compress(value)
 
+为后续事件发射设置修饰符，
+
 ####socket.close()
 
+手动断开套接字。
+
 ####socket.disconnect()
+
+同上
 
 ####事件： 'connect'
 

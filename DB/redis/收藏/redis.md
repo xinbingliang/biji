@@ -220,7 +220,7 @@ exec 执行队列
 
 悲观锁和乐观锁，redis使用乐观锁
 
-* `watch key1 key2` 监视，有一个值变化事务就会取消
+* `watch key1 key2` 监视，有一个值变化事务就会取消，当其他程序修改时触发取消
 
 ```
 set ticket 1
