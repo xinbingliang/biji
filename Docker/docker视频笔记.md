@@ -113,11 +113,47 @@
 #### 创建过程
 
 1. 创建目录
-2. ​
+
+2. 创建Dockerfile
+
+   ```
+   # This is my first Dcokerfile
+   # Version 1.0
+   # Author: xinneirong
+
+   # Base image
+   FROM centos
+
+   # MAINTAINER
+   MAINTAINER xinneirong
+
+   # ADD,会自动解压
+   ADD pcre-8.38.tar.gz /usr/local/src
+   ADD nginx-1.9.3.tar.gz /usr/local/src
+
+   # RUN
+   RUN yum install -y gcc gcc-c++ make openssl-devel && useradd -s /sbin/nologin -M www
+
+   # WORKDIR
+   WORKDIR /usr/local/src/nginx-1.9.3
+
+
+   RUN ./configure --prefix=/usr/local/nginx --user=www --group=www --with-http_ssl_module --with-http_stub_status_module --with-pcre=/usr/local/src/pcre-8.38 && make && make install && echo "daemon off;" >> /usr/local/nginx/conf/nginx.conf
+
+   ENV PATH /usr/local/nginx/sbin:$PATH
+
+   EXPOSE 80
+
+   CMD ["nginx"]
+   ```
+
+3. `docker build -t nginx-file:v1 .`构建
 
 ## 核心原理
 
 ###资源隔离和限制
+
+
 
 ### 网络和Registery
 
