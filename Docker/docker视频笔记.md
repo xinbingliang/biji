@@ -4,7 +4,7 @@
 * `docker pull` 获取镜像
 * `docker images` 查看镜像
 * `docker rmi` 删除镜像
-*  `docker run --name -h hostname` 启动容器
+* `docker run --name -h hostname` 启动容器
 * `docker stop CONTAINER ID` 停止容器
 * `docker ps ` 查看容器
 * `docker exec | docker attach` 进入容器
@@ -137,35 +137,62 @@
    # WORKDIR
    WORKDIR /usr/local/src/nginx-1.9.3
 
-
-   RUN ./configure --prefix=/usr/local/nginx --user=www --group=www --with-http_ssl_module --with-http_stub_status_module --with-pcre=/usr/local/src/pcre-8.38 && make && make install && echo "daemon off;" >> /usr/local/nginx/conf/nginx.conf
+    RUN ./configure --prefix=/usr/local/nginx --user=www --group=www --with-http_ssl_module --with-http_stub_status_module --with-pcre=/usr/local/src/pcre-8.38 && make && make install && echo "daemon off;" >> /usr/local/nginx/conf/nginx.conf
 
    ENV PATH /usr/local/nginx/sbin:$PATH
 
    EXPOSE 80
 
    CMD ["nginx"]
+
    ```
 
 3. `docker build -t nginx-file:v1 .`构建
+
 
 ## 核心原理
 
 ###资源隔离和限制
 
+####隔离
 
+LXC (Kernel namespace)
+
+* `pid` 不同进程的`pidnamespace`进行隔离
+* `net` netnamespace进行隔离
+* `Ipc` 进程间交互隔离
+* `mnt` 进程在特定目录下执行
+* `uts` 使得容器拥有自己的hostname
+* `User` 使容器拥有不同的用户和组
+
+#### 限制
+
+cgroup
+
+* `cpu` 
+* `内存`
+
+#### 测试
+
+1. 创建目录
+2. `wget http://mirrors.aliyun.com/repo/epel-6.repo` 
+3. 创建`Dockerfile`
+
+```
+FROM centos
+
+ADD epel-6.repo /etc/yum.repos.d/
+RUN yum -y install stress && yum clean all
+
+ENTRYPOINT ["stress"]
+```
+
+* `docker build -t stress-centos .` 构建镜像
+* `docker -c ` 指定`cpu`配额
+* `cat /proc/cpuinfo`
+* `docker run -it --rm stress-centos --cpu 1` 占用一个cpu
+* `docker run -it --rm -c 512 stress-centos --cpu 1` 占一个cpu
+* `docker run -it --rm --cpuset-cpus=0,1 stress-centos --cpu 1` 指定两个CPU，当两个容器时，各占一半
+* `docker run -it --rm -m 128m stress-centos --vm 1 --vm-bytes 120m --vm-hang 0`  容器只使用128M内存，并且不能超出
 
 ### 网络和Registery
-
-
-
-
-
-
-
-
-
-
-
-
-
