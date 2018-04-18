@@ -196,3 +196,30 @@ ENTRYPOINT ["stress"]
 * `docker run -it --rm -m 128m stress-centos --vm 1 --vm-bytes 120m --vm-hang 0`  容器只使用128M内存，并且不能超出
 
 ### 网络和Registery
+
+# 穆课视频
+
+* `docker run -d` 使得容器在后台运行
+* `docker logs ` 输出容器的日志
+  * `-f` 跟踪显示所有输出
+  * `-t` 输出时间 
+* `docker attach 97a6249869aa` 进入容器的交互
+* `docker top 97a6` 查看容器中运行的进程
+* `docker exec [-d] [-i] [-t]` 在运行的容器中启动新的进程
+  * `docker exec -it 97 /bin/bash` 
+* `docker stop` 停止容器
+* `docker kill` 杀死容器
+* `docker run -p` 指定端口
+* `docker run -P` 随机端口
+* `ctrl+P+Q` 使得容器运行在后台中
+* `docker port web` 查看端口映射
+* `docker inspect ` 查看容器的信息
+* `docker rmi ` 删除镜像
+* `docker search` 镜像查找
+* `docker commit` 通过容器构建镜像
+  * `-a` 指定作者
+  * `-m` 构建信息
+  * `-p`  不暂停运行容器
+  * `docker commit -a 'xinneirong xinneirong@gmail.com' -m 'test' b2a46b4ee5b9 xin/mytest:v0.1`
+* `docker build ` 使用Dockerfile构建镜像
+  * `-t` 指定镜像名称
