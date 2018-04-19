@@ -152,22 +152,30 @@
 
 ## 核心原理
 
+* 文件系统隔离：每个容器都有自己的root文件系统
+* 进程隔离：每个容器都运行在自己的进程环境中
+* 网络隔离：容器间灯虚拟网络接口和IP地址都是分开的
+* 资源隔离和分组：使用cgroup将cpu和内存之类的资源独立分配给每个Docker容器
+* ​
+
 ###资源隔离和限制
 
 ####隔离
 
 LXC (Kernel namespace)
 
-* `pid` 不同进程的`pidnamespace`进行隔离
-* `net` netnamespace进行隔离
-* `Ipc` 进程间交互隔离
-* `mnt` 进程在特定目录下执行
-* `uts` 使得容器拥有自己的hostname
+* `pid` 不同进程的`pidnamespace`进行隔离（进程隔离）
+* `net` netnamespace进行隔离（管理网络接口）
+* `Ipc` 进程间交互隔离（管理跨进程通信访问）
+* `mnt` 进程在特定目录下执行（管理挂载点）
+* `uts` 使得容器拥有自己的hostname（隔离内核和版本标识）
 * `User` 使容器拥有不同的用户和组
 
 #### 限制
 
 cgroup
+
+进行资源限制，优先级设定，资源计量，资源控制
 
 * `cpu` 
 * `内存`
@@ -197,6 +205,7 @@ ENTRYPOINT ["stress"]
 
 ### 网络和Registery
 
+<<<<<<< HEAD
 # 穆课视频
 
 * `docker run -d` 使得容器在后台运行
@@ -223,3 +232,17 @@ ENTRYPOINT ["stress"]
   * `docker commit -a 'xinneirong xinneirong@gmail.com' -m 'test' b2a46b4ee5b9 xin/mytest:v0.1`
 * `docker build ` 使用Dockerfile构建镜像
   * `-t` 指定镜像名称
+=======
+####网络
+
+* 默认使用桥接（bridge），每创建一个就创建一个接口
+* HOST直接和物理机使用同一个
+* 使用其他容器的网络
+
+#### Registery
+
+1. `docker run -d -p 5000:5000 registry` 运行私有仓库
+2. `docker tag 8fea8a5899fc 127.0.0.1:5000/test/test-django:v1`
+3. `docker images`
+4. `docker push 127.0.0.1:5000/test/test-django:v1`
+>>>>>>> 30168ab40702b61379f208ef5cba3b6542f89c01
