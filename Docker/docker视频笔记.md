@@ -203,10 +203,20 @@ ENTRYPOINT ["stress"]
 * `docker run -it --rm --cpuset-cpus=0,1 stress-centos --cpu 1` 指定两个CPU，当两个容器时，各占一半
 * `docker run -it --rm -m 128m stress-centos --vm 1 --vm-bytes 120m --vm-hang 0`  容器只使用128M内存，并且不能超出
 
-### 网络和Registery
+#### 网络
 
-<<<<<<< HEAD
-# 穆课视频
+- 默认使用桥接（bridge），每创建一个就创建一个接口
+- HOST直接和物理机使用同一个
+- 使用其他容器的网络
+
+#### Registery
+
+1. `docker run -d -p 5000:5000 registry` 运行私有仓库
+2. `docker tag 8fea8a5899fc 127.0.0.1:5000/test/test-django:v1`
+3. `docker images`
+4. `docker push 127.0.0.1:5000/test/test-django:v1`
+
+#穆课视频
 
 * `docker run -d` 使得容器在后台运行
 * `docker logs ` 输出容器的日志
@@ -232,17 +242,77 @@ ENTRYPOINT ["stress"]
   * `docker commit -a 'xinneirong xinneirong@gmail.com' -m 'test' b2a46b4ee5b9 xin/mytest:v0.1`
 * `docker build ` 使用Dockerfile构建镜像
   * `-t` 指定镜像名称
-=======
-####网络
+### Dockerfile
 
-* 默认使用桥接（bridge），每创建一个就创建一个接口
-* HOST直接和物理机使用同一个
-* 使用其他容器的网络
+* `FROM` 指定基础镜像
+* `MAINTAINER` 说明作者和联系信息
+* `RUN`  运行linux指令，每一个RUN就是镜像的一层
+* `EXPOSE` 对外暴露的端口
+* `CMD` 在容器启动时指定的命令，当自己指定时该指令会被直接覆盖
+  * `CMD ['executable', 'param1', 'param2']` 
+* `ENTERYPOINT`在容器启动时指定的命令，当自己指定时该指令不被覆盖
+  * `ENTERYPOINT ['executable', 'param1', 'param2']`
+  * `docker run --entrypoint` 覆盖掉设定的指令
+* `ADD` 复制文件到镜像中并解压
+  * `ADD A:B`
+* `COPY` 复制文件到镜像，单纯复制文件推荐使用该命令
+* `VOLUME` 提供共享数据或数据持久化的作用
+* `WORKDIR` 指定工作目录，使用绝对路径
+* `ENV` 设置环境变量
+* `USER` 指定镜像运行时的角色
+* `ONBUILD` 当一个镜像被当作其他镜像基础时执行
+  * `ONBUILD copy index.html /usr/share/nginx/html/`
+* `docker build --no-cache` 构建过程中不使用缓存
+* `docker history` 查看镜像构建过程
 
-#### Registery
+### 网络
 
-1. `docker run -d -p 5000:5000 registry` 运行私有仓库
-2. `docker tag 8fea8a5899fc 127.0.0.1:5000/test/test-django:v1`
-3. `docker images`
-4. `docker push 127.0.0.1:5000/test/test-django:v1`
->>>>>>> 30168ab40702b61379f208ef5cba3b6542f89c01
+#### 虚拟网桥
+
+* `apt-get install bridge-utils` 网桥工具
+* `brctl show` 
+* `docker run -it --name network1 ubuntu /bin/bash`
+* `brctl show`
+
+#### 自定义虚拟网桥
+
+* `brctl addbr br0` 添加一个虚拟网桥叫br0
+
+* `ifconfig br0 192.168.100.1 netmask 255.255.255.0` 为虚拟网桥添加ip和子网掩码
+
+* `vim /etc/default/docker`
+
+  ```
+  DOCKER_OPTS="b=br0"
+  ```
+
+* 重启docker
+
+#### 容器之间的连接
+
+```
+FROM ubuntu:16.04
+RUN apt-get update 
+RUN apt-get install -y iputils-ping
+RUN apt-get install -y nginx 
+RUN apt-get install -y curl
+EXPOSE 80
+CMD ['/bin/bash']
+```
+
+##### 允许所有容器互联
+
+
+
+##### 拒绝容器间互联
+
+
+
+##### 允许特定容器间的连接
+
+
+
+### 数据卷
+
+###跨主机访问
+
