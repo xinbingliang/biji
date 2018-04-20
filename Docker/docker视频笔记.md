@@ -300,19 +300,100 @@ EXPOSE 80
 CMD ['/bin/bash']
 ```
 
+* `docker build -t xin/nettest:v1 .`
+* `docker run -it --name cct1 xin/nettest:v1`
+* `nginx` 启动`nginx`服务
+* `docker run -it --name cct2 xin/nettest:v1`
+* `ping 172.17.0.2` 在一个容器中ping另外一个
+* `curl http://172.17.0.2:80` 访问web服务
+* 重启容器后`ip`会发生变化
+
 ##### 允许所有容器互联
 
-
+* `icc=true` 允许容器间相互连接，默认
+* `docker run --link=[CONTAINER_NMAE]:[ALIAS]` 指定容器间访问的代号
+  * `docker run -it --link=cct1:webtest --name cct3 xin/nettest:v1` 启动容器时指定连接到`cct1`并且名称为`webtest`
+* `ping webtest` 
 
 ##### 拒绝容器间互联
 
+* `icc=false` 拒绝所有容器间互联
 
+  ```
+  # /etc/default/docker 
+
+  DOCKER_OPTS = '--icc=false'
+  ```
+
+* `service docker restart `
 
 ##### 允许特定容器间的连接
 
+1. `--icc=false`
 
+2. `--iptables=true` 允许使用iptables
+
+   ```
+   # /etc/default/docker 
+
+   DOCKER_OPTS = '--icc=false --iptables=true'
+   ```
+
+3. `--link`
+
+4. `service docker restart `
+
+5. `iptables -L -n` 查看iptable
+
+6. `iptables -F` 清空
+
+#### 容器外网访问
+
+* `--ip_forward=true` 决定系统是否转发流量
+  * `sysctl net.ipv4.conf.all.forwarding` 
+* `iptables` 
+  * 表（table）
+  * 链（chain）
+  * 规则（rule）
+    * ACCEPT
+    * REJECT
+    * DROP
+  * `iptables -L -n` 查看iptable
 
 ### 数据卷
 
+为一个或多个容器提供访问
+
+1. 容器启动时初始化
+2. 可以在容器之间进行共享和重用
+3. 可以直接对数据卷中的内容进行修改
+4. 数据卷的变化不会影响镜像的更新
+5. 卷会一直存在，即便容器被删除
+
+* `docker run -it -v /docker-test/data:/data ubuntu:14.04 /bin/bash`
+* `docker run -it -v /docker-test/data:/data:ro ubuntu:14.04 /bin/bash` 数据卷只读
+* `VOLUME ['pathto1', 'pathto2']` 在Dockerfile中构建两个数据卷
+
+#####数据卷容器
+
+* `docker run --volumes-from ` 指定数据卷容器
+* `docker run -it --volumes-from 3dbec11a2c05  ubuntu:14.04 /bin/bash`
+
+##### 数据卷备份
+
+1. `docker run --volumes-from 1971792594b7 -v ~/backup:/backup --name back-cn ubuntu:14.04 tar cvf /backup/back.tar /data` 
+
 ###跨主机访问
+
+##### 使用网桥实现跨主机连接
+
+
+
+##### 使用Open vSwitch实现跨主机容器连接
+
+* GRE 通用路由协议
+
+##### 使用weave实现跨主机容器连接
+
+
 
