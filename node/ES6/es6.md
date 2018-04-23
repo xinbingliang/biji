@@ -304,39 +304,259 @@ for (let item of set1.keys()){
 
 有value也有key
 
-```
-
-```
-
-
-
 ## proxy
 
+对对象的默认操作进行拦截
 
+```javascript
+let obj = {
+    name: 'xinbingliang'
+}
+let proxy1 = new Proxy(obj, {
+    get(target, key, proxy){
+        //target 源对象
+        //key 键名
+        //proxy 当前实例
+        return 'xinxin'
+    }
+})
+
+//get 只要是获得就会触发
+console.log(proxy1.name)
+```
+
+- **get(target, propKey, receiver)**：拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`。
+- **set(target, propKey, value, receiver)**：拦截对象属性的设置，比如`proxy.foo = v`或`proxy['foo'] = v`，返回一个布尔值。
+- **has(target, propKey)**：拦截`propKey in proxy`的操作，返回一个布尔值。
+- **deleteProperty(target, propKey)**：拦截`delete proxy[propKey]`的操作，返回一个布尔值。
+- **ownKeys(target)**：拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`、`for...in`循环，返回一个数组。该方法返回目标对象所有自身的属性的属性名，而`Object.keys()`的返回结果仅包括目标对象自身的可遍历属性。
+- **getOwnPropertyDescriptor(target, propKey)**：拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
+- **defineProperty(target, propKey, propDesc)**：拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
+- **preventExtensions(target)**：拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
+- **getPrototypeOf(target)**：拦截`Object.getPrototypeOf(proxy)`，返回一个对象。
+- **isExtensible(target)**：拦截`Object.isExtensible(proxy)`，返回一个布尔值。
+- **setPrototypeOf(target, proto)**：拦截`Object.setPrototypeOf(proxy, proto)`，返回一个布尔值。如果目标对象是函数，那么还有两种额外操作可以拦截。
+- **apply(target, object, args)**：拦截 Proxy 实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
+- **construct(target, args)**：拦截 Proxy 实例作为构造函数调用的操作，比如`new proxy(...args)`。
 
 ## 类中的construct和name
 
+````javascript
+let A = class AA{
+    constructor(x){
+        this.x = x;
+        //AA此时只能在内部使用
+        console.log(AA.name)
+        //return 是基本类型对对象没有影响，若是引用数据类型就会改变对象指向
+    }
 
+    getA(){
+        console.log(AA.name)        
+    }
+}
 
-## 类中执行变量提升和静态方法及可枚举问题
+let a = new A(10)
+console.log(a.x)
+````
 
+## 类中执行、变量提升、静态方法及可枚举问题
 
+### 立即执行
+
+````javascript
+let a1 = new class{
+    constructor(name){
+        console.log(name)
+    }
+}('xin');
+````
+
+### 变量提升
+
+没有变量提示
+
+### 静态方法
+
+````javascript
+class AA{
+    constructor(){
+        this.v = 'aa'
+    }
+    //同样相当于在原型上
+    A(){
+
+    }
+    //类本身方法，不能被实例使用，单能被子类继承
+    static B(){
+
+    }
+}
+
+let aa = new AA()
+````
+
+````javascript
+class F{
+    static getF(){
+        console.log("getF");
+    }
+}
+
+class G extends F{
+    constructor(){
+        super();
+    }
+
+    static getF()(){
+        super.getF();
+    }
+}
+````
+
+### 枚举
+
+原型上的方法不能枚举
 
 ## 类继承
 
+````javascript
+class A{
+    constructor(x){
+        this.x = x
+    }
+    getx(){
+        console.log(this.x)
+    }
+    static getY(){
+        console.log(this)
+    }
+}
 
+class B extends A{
+    constructor(x){
+        //子类没有this, super()执行完成之后才有this
+        super(x); //指父类的constructor
+
+        this.y = 100;
+    }
+    getx(){
+        super.getx() //super指父类原型
+    }
+
+    //静态方法的继承
+    static getY(){
+        super.getY(); //super指父类本身
+    }
+}
+````
 
 ## Promise
 
+用于处理异步，有pending、Fulfilled、 Rejected三种状态
 
+### 基本语法
+
+````javascript
+let pro1 = new Promise((resolve, reject)=>{
+    //resolve 函数 
+    //reject 函数
+    resolve("success"); //成功
+    reject("fail"); //失败
+})
+
+pro1.then((res)=>{
+    //成功的回调
+    console.log(res)
+},
+(e)=>{
+    //失败的回调
+    console.log(e)
+})
+
+console.log('ok') //先执行Promise后直接执行，then是异步的
+````
+
+### all
+
+```javascript
+//Promise.all([每一项都是Promise对象])
+let p1 = new Promise((resolve, reject)=>{
+    resolve("ok1")
+})
+
+let p2 = new Promise((resolve, reject)=>{
+    resolve("ok2")
+})
+
+let p3 = new Promise((resolve, reject)=>{
+    reject('err2')
+})
+
+let p_all = Promise.all([p1, p2, p3])
+p_all.then((res)=>{ //每一项都成功才会执行
+    console.log(res)
+}).catch((e)=>{ //有一个错误就执行
+    console.log(e)
+})
+```
+
+### race
+
+```javascript
+let p1 = new Promise((resolve, reject)=>{
+    resolve("ok1")
+})
+
+let p2 = new Promise((resolve, reject)=>{
+    resolve("ok2")
+})
+
+let p3 = new Promise((resolve, reject)=>{
+    resolve("ok3")
+})
+
+Promise.race([p1, p2, p3]).then((res)=>{ //第一个正确被确认,彼此之间的顺序不会等待
+    console.log(res)
+}).catch((e)=>{
+    console.log(e)
+})
+```
 
 ## async
 
+### async
 
+````javascript
+// 默认返回一个Promise对象
+async function getA() {
+    //return 得到成功的回调
+    //有错误就会被catch就会被捕捉
+    throw new Error("对不起");
+    return "aaa";
+}
 
-## esmodule
+getA().then((res)=>{
+    console.log(res)
+}).catch((e)=>{
+    console.log(e)
+})
+````
 
+### await
 
+````javascript
+let p = new Promise((resolve, reject)=>{
+    resolve('aaaa')
+})
 
+async function getA(){
+    //await 后面是一个promise实例
+    await p //先执行异步代码后才能执行后面代码，把异步变成同步
+}
 
-
+getA().then((res)=>{
+    console.log(res)
+}).catch((e)=>{
+    console.log(e)
+})
+````
