@@ -546,12 +546,14 @@ getA().then((res)=>{
 
 ````javascript
 let p = new Promise((resolve, reject)=>{
-    resolve('aaaa')
+    setTimeout(()=>{
+        resolve('aaaaaa');
+    }, 2000)
 })
 
-async function getA(){
-    //await 后面是一个promise实例
-    await p //先执行异步代码后才能执行后面代码，把异步变成同步
+async function getA() {
+    console.log(await p)
+    return '2333'
 }
 
 getA().then((res)=>{
