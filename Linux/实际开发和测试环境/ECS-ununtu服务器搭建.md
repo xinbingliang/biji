@@ -84,7 +84,7 @@ apt-get install libapache2-mod-php5 php5 php5-cli php-pear php5-xcache libapache
 apt-get install software-properties-common python-software-properties 
 add-apt-repository ppa:ondrej/php
 sudo apt-get update
-apt-get install php5.6 php5.6-fpm php5.6-gd php5.6-mbstring php5.6-mysql php5.6-zip php5.6-xml php5.6-mcrypt php5.6-redis 
+apt-get install php5.6 php5.6-fpm php5.6-gd php5.6-mbstring php5.6-mysql php5.6-zip php5.6-xml php5.6-mcrypt php5.6-redis php5.6-curl
 ````
 
 ```
