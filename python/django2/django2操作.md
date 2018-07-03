@@ -159,16 +159,15 @@
 
    def index(request):
        return render(request, 'home.html')
-   ````
-
 
    def add2(request, a, b):
-       c = int(a) + int(b)
-       return HttpResponse(str(c))
+   	c = int(a) + int(b)
+      	return HttpResponse(str(c))
    ````
 
+
    ````python
-   # 自定义一个跳转
+	# 自定义一个跳转
    # views.py
    from django.http import HttpResponseRedirect
    from django.core.urlresolvers import reverse  # Django 1.4.x - Django 1.10.x
