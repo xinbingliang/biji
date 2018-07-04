@@ -57,7 +57,6 @@
 
    ````python
    # learn/urls.py
-   from django.contrib import admin
    from django.urls import path
    from learn import views
 
@@ -66,7 +65,6 @@
    ]
 
    # 或
-   from django.contrib import admin
    from django.urls import path
    from learn import views
 
@@ -376,6 +374,8 @@ class Entry(models.Model):
         return self.headline
 ````
 
+* `ManyToManyField` 使用set添加对象`entry.authors.set(Author.objects.all()[0:1])`，使用时该对象id需要先生成，添加的数据必须是列表
+
 ### 模型创建时外键参考
 
 ````python
@@ -538,6 +538,172 @@ qs = qs1 | qs2 | qs3
 # 去重方法
 qs = qs.distinct()
 ````
+
+## QuerySet进阶
+
+### models
+
+```python
+from django.db import models
+
+class Author(models.Model):
+    name = models.CharField(max_length=50)
+    qq = models.CharField(max_length=10)
+    address = models.TextField()
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.name
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=50)
+    author = models.ForeignKey(Author, on_delete=models.DO_NOTHING)
+    content = models.TextField()
+    score = models.IntegerField()
+    tags = models.ManyToManyField('tag')
+
+    def __str__(self):
+        return self.title
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+```
+
+### 添加测试数据
+
+* `python3 manage.py shell` 
+
+  ```python
+  import random
+  from blog.models import Author,Article,Tag
+
+  author_name_list = ['WeizhongTu', 'twz915', 'dachui', 'zhe', 'zhen']
+  article_title_list = ['Django 教程', 'Python 教程', 'HTML 教程']
+
+  for author_name in author_name_list:
+    author, created = Author.objects.get_or_create(name=author_name)
+    # 随机生成9位数的QQ，
+    author.qq = ''.join(
+    str(random.choice(range(10))) for _ in range(9)
+    )
+    author.addr = 'addr_%s' % (random.randrange(1, 3))
+    author.email = '%s@ziqiangxuetang.com' % (author.addr)
+    author.save()
+    
+  # 随机生成文章
+  for article_title in article_title_list:
+    # 从文章标题中得到 tag
+    tag_name = article_title.split(' ', 1)[0]
+    tag, created = Tag.objects.get_or_create(name=tag_name)
+    random_author = random.choice(Author.objects.all())
+   
+   	for i in range(1, 21):
+        title = '%s_%s' % (article_title, i)
+        article, created = Article.objects.get_or_create(
+  			title=title, defaults={
+  				'author': random_author,  # 随机分配作者
+                  'content': '%s 正文' % title,
+                  'score': random.randrange(70, 101),  # 随机给文章一个打分
+  			}
+      )
+      article.tags.add(tag)
+  ```
+
+### 查看 `Django queryset`执行的 `SQL`
+
+* `str(Author.objects.all().query)` 查看执行的SQL语句
+* `str(Author.objects.filter(name="WeizhongTu").query)` 
+
+### values_list 获取元组形式结果
+
+```python
+In [13]: Author.objects.values_list('name', 'qq')
+Out[13]: <QuerySet [('WeizhongTu', '542618033'), ('twz915', '177212133'), ('dachui', '288837236'), ('zhe', '750864042'), ('zhen', '410985914')]>
+  
+In [14]: authors = Author.objects.values_list('name', 'qq')
+
+In [15]: list(authors)
+Out[15]: 
+[('WeizhongTu', '542618033'),
+ ('twz915', '177212133'),
+ ('dachui', '288837236'),
+ ('zhe', '750864042'),
+ ('zhen', '410985914')]
+
+In [16]: Author.objects.values_list('name', flat=True)
+Out[16]: <QuerySet ['WeizhongTu', 'twz915', 'dachui', 'zhe', 'zhen']>
+```
+
+### values获取字典形式的结果
+
+````python
+In [17]: Author.objects.values('name', 'qq')
+Out[17]: <QuerySet [{'qq': '542618033', 'name': 'WeizhongTu'}, {'qq': '177212133', 'name': 'twz915'}, {'qq': '288837236', 'name': 'dachui'}, {'qq': '750864042', 'name': 'zhe'}, {'qq': '410985914', 'name': 'zhen'}]>
+
+In [18]: list(Author.objects.values('name', 'qq'))
+Out[18]: 
+[{'qq': '542618033', 'name': 'WeizhongTu'},
+ {'qq': '177212133', 'name': 'twz915'},
+ {'qq': '288837236', 'name': 'dachui'},
+ {'qq': '750864042', 'name': 'zhe'},
+ {'qq': '410985914', 'name': 'zhen'}]
+````
+
+1. values_list 和 values 返回的并不是真正的 列表 或 字典，也是 queryset，他们也是 lazy evaluation 的（惰性评估，通俗地说，就是用的时候才真正的去数据库查）
+2. 如果查询后没有使用，在数据库更新后再使用，你发现得到在是新内容！！！如果想要旧内容保持着，数据库更新后不要变，可以 list 一下
+3. 如果只是遍历这些结果，没有必要 list 它们转成列表（浪费内存，数据量大的时候要更谨慎！！！）
+
+### extra 实现别名、条件、排序
+
+````python
+# 实现别名
+In [22]: str(Tag.objects.all().extra(select={'tag_name': 'name'}).query) # Tag.objects.all().extra(select={'tag_name': 'name'}).query.__str__()
+Out[22]: 'SELECT (name) AS `tag_name`, `blog_tag`.`id`, `blog_tag`.`name` FROM `blog_tag`'
+
+In [24]: tags = Tag.objects.all().extra(select={'tag_name': 'name'})
+In [25]: tags[0].name
+Out[25]: 'Django'
+In [26]: tags[0].tag_name
+Out[26]: 'Django'
+
+# 只查询一次tag_name，不查询name
+In [28]: Tag.objects.all().extra(select={'tag_name': 'name'}).defer('name').query.__str__() 
+Out[28]: 'SELECT (name) AS `tag_name`, `blog_tag`.`id` FROM `blog_tag`'
+````
+
+### annotate 聚合计数、求和、平均数
+
+````python
+# 计数
+In [29]: from django.db.models import Count
+
+In [30]: Article.objects.all().values('author_id').annotate(count=Count('author')).values('author_id', 'count')
+Out[30]: <QuerySet [{'count': 40, 'author_id': 3}, {'count': 20, 'author_id': 5}]>
+
+
+# 求和
+
+#平均值
+
+````
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
