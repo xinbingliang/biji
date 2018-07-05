@@ -686,30 +686,221 @@ In [29]: from django.db.models import Count
 In [30]: Article.objects.all().values('author_id').annotate(count=Count('author')).values('author_id', 'count')
 Out[30]: <QuerySet [{'count': 40, 'author_id': 3}, {'count': 20, 'author_id': 5}]>
 
+In [31]: Article.objects.all().values('author_id').annotate(count=Count('author')).values('author_id', 'count').query.__str__()
+Out[31]: 'SELECT `blog_article`.`author_id`, COUNT(`blog_article`.`author_id`) AS `count` FROM `blog_article` GROUP BY `blog_article`.`author_id` ORDER BY NULL'
 
+In [33]: Article.objects.all().values('author__name').annotate(count=Count('author')).values('author__name', 'count')
+Out[33]: <QuerySet [{'count': 40, 'author__name': 'dachui'}, {'count': 20, 'author__name': 'zhen'}]>
+  
 # 求和
+In [35]: Article.objects.values('author_id').annotate(avg_score=Avg('score')).values('author_id', 'avg_score')
+Out[35]: <QuerySet [{'avg_score': 84.075, 'author_id': 3}, {'avg_score': 84.75, 'author_id': 5}]>
+
+In [36]: Article.objects.values('author_id').annotate(avg_score=Avg('score')).values('author_id', 'avg_score').query.__str__()
+Out[36]: 'SELECT `blog_article`.`author_id`, AVG(`blog_article`.`score`) AS `avg_score` FROM `blog_article` GROUP BY `blog_article`.`author_id` ORDER BY NULL'
 
 #平均值
+In [37]: from django.db.models import Sum
 
+In [38]: Article.objects.values('author__name').annotate(sum_score=Sum('score')).values('author__name', 'sum_score')
+Out[38]: <QuerySet [{'sum_score': 3363, 'author__name': 'dachui'}, {'sum_score': 1695, 'author__name': 'zhen'}]>
+
+In [39]: Article.objects.values('author__name').annotate(sum_score=Sum('score')).values('author__name', 'sum_score').query.__str__()
+Out[39]: 'SELECT `blog_author`.`name`, SUM(`blog_article`.`score`) AS `sum_score` FROM `blog_article` INNER JOIN `blog_author` ON (`blog_article`.`author_id` = `blog_author`.`id`) GROUP BY `blog_author`.`name` ORDER BY NULL'
 ````
 
+### select_related 优化一对一，多对一查询
+
+这样当 DEBUG 为 True 的时候，我们可以看出 django 执行了什么 SQL 语句
+
+```python
+# settings.py 尾部加上
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+        },
+    },
+}
+
+# 查询文章时连作者也查询出来
+In [3]: articles = Article.objects.all().select_related('author')[:10]
+
+In [4]: a1=articles[0]
+(0.001) SELECT `blog_article`.`id`, `blog_article`.`title`, `blog_article`.`author_id`, `blog_article`.`content`, `blog_article`.`score`, `blog_author`.`id`, `blog_author`.`name`, `blog_author`.`qq`, `blog_author`.`address`, `blog_author`.`email` FROM `blog_article` INNER JOIN `blog_author` ON (`blog_article`.`author_id` = `blog_author`.`id`) LIMIT 1; args=()
+
+In [5]: a1.title
+Out[5]: 'Django 教程_1'
+  
+In [6]: a1.author.name
+Out[6]: 'dachui'
+```
+
+### prefetch_related 优化一对多，多对多查询
+
+prefetch_related 用于 一对多，多对多；prefetch_related是通过再执行一条额外的SQL语句，然后用 Python 把两次SQL查询的内容关联（joining)到一起
+
+````python
+In [3]: articles = Article.objects.all().prefetch_related('tags')[:10]
+
+In [4]: articles
+(0.001) SELECT @@SQL_AUTO_IS_NULL; args=None
+(0.011) SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED; args=None
+(0.084) SELECT `blog_article`.`id`, `blog_article`.`title`, `blog_article`.`author_id`, `blog_article`.`content`, `blog_article`.`score` FROM `blog_article` LIMIT 10; args=()
+(0.001) SELECT VERSION(); args=None
+(0.076) SELECT (`blog_article_tags`.`article_id`) AS `_prefetch_related_val_article_id`, `blog_tag`.`id`, `blog_tag`.`name` FROM `blog_tag` INNER JOIN `blog_article_tags` ON (`blog_tag`.`id` = `blog_article_tags`.`tag_id`) WHERE `blog_article_tags`.`article_id` IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10); args=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+Out[4]: <QuerySet [<Article: Django 教程_1>, <Article: Django 教程_2>, <Article: Django 教程_3>, <Article: Django 教程_4>, <Article: Django 教程_5>, <Article: Django 教程_6>, <Article: Django 教程_7>, <Article: Django 教程_8>, <Article: Django 教程_9>, <Article: Django 教程_10>]>
+
+In [5]: articles = Article.objects.all()[:3]
+
+In [6]: articles
+(0.002) SELECT `blog_article`.`id`, `blog_article`.`title`, `blog_article`.`author_id`, `blog_article`.`content`, `blog_article`.`score` FROM `blog_article` LIMIT 3; args=()
+Out[6]: <QuerySet [<Article: Django 教程_1>, <Article: Django 教程_2>, <Article: Django 教程_3>]>
+
+In [7]: articles = Article.objects.all().prefetch_related('tags')[:3]
+
+In [8]: for a in articles:
+   ...:     print(a.title, '<-->', a.tags.all())
+   ...:     
+(0.001) SELECT `blog_article`.`id`, `blog_article`.`title`, `blog_article`.`author_id`, `blog_article`.`content`, `blog_article`.`score` FROM `blog_article` LIMIT 3; args=()
+(0.003) SELECT (`blog_article_tags`.`article_id`) AS `_prefetch_related_val_article_id`, `blog_tag`.`id`, `blog_tag`.`name` FROM `blog_tag` INNER JOIN `blog_article_tags` ON (`blog_tag`.`id` = `blog_article_tags`.`tag_id`) WHERE `blog_article_tags`.`article_id` IN (1, 2, 3); args=(1, 2, 3)
+Django 教程_1 <--> <QuerySet [<Tag: Django>]>
+Django 教程_2 <--> <QuerySet [<Tag: Django>]>
+Django 教程_3 <--> <QuerySet [<Tag: Django>]>
+````
+
+### defer 排除不需要的字段
+
+在复杂的情况下，表中可能有些字段内容非常多，取出来转化成 Python 对象会占用大量的资源。
+
+这时候可以用 defer 来排除这些字段，比如我们在文章列表页，只需要文章的标题和作者，没有必要把文章的内容也获取出来（因为会转换成python对象，浪费内存）
+
+```python
+In [9]: Article.objects.all()
+
+In [10]: Article.objects.all().defer('content')
+```
+
+### only仅选择需要的字段
+
+和 defer 相反，only 用于取出需要的字段，假如我们只需要查出 作者的名称
+
+```
+In [13]: Author.objects.all().only('name')
+```
+
+### 自定义聚合功能
+
+## 自定义Field
+
+````python
+# 自定义文件fields.py
+# -*- coding: utf-8 -*-
+from django.db import models
+import ast
+
+class CompressedTextField(models.TextField):
+    # __metaclass__ = models.SubfieldBase
+
+    def to_python(self, value):
+        if not value:
+            return value
+
+        try:
+            return value.decode('base64').decode('bz2').decode('utf-8')
+        except Exception:
+            return value
+
+    def get_prep_value(self, value):
+        if not value:
+            return value
+
+        try:
+            value.decode('base64')
+            return value
+        except Exception:
+            try:
+                tmp = value.encode('utf-8').encode('bz2').encode('base64')
+            except Exception:
+                return value
+            else:
+                if len(tmp) > len(value):
+                    return value
+                return tmp
 
 
+class ListField(models.TextField):
+    # __metaclass__ = models.SubfieldBase
+    description = "Stores a python list"
 
+    def __init__(self, *args, **kwargs):
+        super(ListField, self).__init__(*args, **kwargs)
 
+    def to_python(self, value):
+        if not value:
+            value = []
 
+        if isinstance(value, list):
+            return value
 
+        return ast.literal_eval(value)
 
+    def get_prep_value(self, value):
+        if value is None:
+            return value
 
+        return unicode(value)
 
+    def value_to_string(self, obj):
+        value = self._get_val_from_obj(obj)
+        return self.get_db_prep_value(value)
+````
 
+````python
+from django.db import models
+from .fields import CompressedTextField, ListField
 
+class Article(models.Model):
+    labels = ListField()
+    content = CompressedTextField(null=True, default='')
+````
 
+```python
+# test
+>>> from app.models import Article
+>>> d = Article()
+>>> d.labels
+[]
+>>> d.labels = ["Python", "Django"]
+>>> d.labels
+["Python", "Django"]
 
+# ***************
+>>> from blog.models import Article
+ 
+>>> a = Article()
+>>> a.labels.append('Django')
+>>> a.labels.append('custom fields')
+ 
+>>> a.labels
+['Django', 'custom fields']
+ 
+>>> type(a.labels)
+<type 'list'>
+ 
+>>> a.content = u'我正在写一篇关于自定义Django Fields的教程'
+>>> a.save()
+```
 
-
-
-
+## 后台
 
 
 
