@@ -29,7 +29,7 @@ server {
     		fastcgi_index  index.php;
     		fastcgi_param  SCRIPT_FILENAME  $DOCUMENT_ROOT$fastcgi_script_name;
 
-		fastcgi_split_path_info ^(.+\.php)(/?.+)$;
+			fastcgi_split_path_info ^(.+\.php)(/?.+)$;
 
     		fastcgi_param PATH_INFO $1;
 
