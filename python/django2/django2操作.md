@@ -110,7 +110,7 @@
    from learn import views
 
    urlpatterns = [
-       path('add2/<int:a>/<int:b>/', views.add2, name='add2')
+       path('add2/<int:a>/<int:b>/', views.add2, name='add2') # 注意匹配参数方式已经变化
    ]
    ```
 
@@ -123,6 +123,14 @@
    ```
 
    * http://127.0.0.1:8000/learn/add2/2/3/
+
+   | 转换格式类型 | 说明                                       |
+   | ------ | ---------------------------------------- |
+   | Str    | 匹配除分隔符（/）外的非空字符，默认类型<year>等价于<str:year>  |
+   | Int    | 匹配0和正整数                                  |
+   | Slug   | 匹配字母、数字、横杠、下划线组成的字符串，str的子集              |
+   | Uuid   | 匹配格式化的UUID，如075194d3-6885-417e-a8a8-6c931e272f00 |
+   | path   | 匹配任何非空字符串，包括路径分隔符，是全集                    |
 
 3. 使用URL_name
 
