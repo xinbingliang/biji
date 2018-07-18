@@ -247,7 +247,7 @@ def index(request):
 |    forloop.last     |            当遍历的元素为最后一项时为真            |
 | forloop.parentloop  | 用在嵌套的 for 循环中， 获取上一层 for 循环的 forloop |
 
-###模板中的逻辑操作
+### 模板中的逻辑操作
 
  ==, !=, >=, <=, >, < 这些比较都可以在模板中使用
 
@@ -272,7 +272,8 @@ num在0到100之间
 ### 安装软件
 
 * `pip3 install PyMySQL`
-* pip3 install mysqlclient` 安装客户端
+* `apt-get install libmysqlclient-dev python3-dev `
+* `pip3 install mysqlclient` 安装客户端
 
 ### 创建模型对象
 
