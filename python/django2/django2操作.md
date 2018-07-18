@@ -284,6 +284,12 @@ from django.db import models
 class Person(models.Model):
     name = models.CharField(max_length=30)
     age = models.IntegerField()
+    
+    class Meta:
+        verbose_name = u"人类表" # 数据表名称
+        verbose_name_plural = verbose_name # 避免加S
+        db_table = "user_message" # 自定义表名称
+        ordering = '-object_id' # 使用id进行倒叙
 ````
 
 ### 生成表
