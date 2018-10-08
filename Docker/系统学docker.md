@@ -272,9 +272,125 @@ if __name__ == '__main__':
 
 ### 容器资源的限制
 
-
+* `docker run --memory=200M xinneirong/ubuntu_stress:v0.0.01 --vm 1 --verbose` 对内存的限制为`200M`，启动一个进程，verbose输出信息
+  * `--memory string ` 只设置memory不设置swap，那么swap和memory，总共为2倍
+  * `--memory-swap string`
+* `docker run --memory=200M xinneirong/ubuntu_stress:v0.0.01 --vm 1 --vm-bytes 500M --verbose` 容器启动时有`400M`内存，但进程需要`500M`内存
+* `docker run --cpu-shares=10 --name=test1 xinneirong/ubuntu_stress:v0.0.01 --cpu 1 --verbose`说明`--cpu-shares`限定容器CPU使用权重，多容器相对权重的比
 
 ## Docker的网络
+
+### 单机网络
+
+#### 网络命名空间
+
+- `docker run -d --name test1 busybox  /bin/sh -c "while true; do sleep 3600; done"` 一个一直运行的容器
+- `docker exec -it 09cc8779fd67 /bin/sh` 进入容器
+- `ip a` 查看网络，且容器网络之间可以相互访问
+- `ip netns list` 目前本机有的网络命名空间
+- `ip netns delete test1` 删除`test1`网络命名空间
+- `ip netns add test1` 创建一个网络命名空间
+- `ip netns add test1`
+- `ip netns exec test1 ip a` 在test1中执行命令
+- `ip netns exec test1 ip link` 
+- `ip netns exec test1 ip link set dev lo up` 将lo网络up起来
+- `ip link add veth-test1 type veth peer name veth-test2` 创建两个`Veth`
+- `ip link set veth-test1 netns test1` 将`veth-test1`添加到`test1`中
+- `ip netns exec test1 ip link` 查看
+- `ip link` 本地ip link变少
+- `ip link set veth-test2 netns test2` 将`veth-test2`添加到`test2`中
+- `ip netns exec test1 ip addr add 192.168.33.1/24 dev veth-test1` 分配IP
+- `ip netns exec test2 ip addr add 192.168.33.2/24 dev veth-test2`
+- `ip netns exec test1 ip link set dev veth-test1 up`拉起网络
+- `ip netns exec test2 ip link set dev veth-test2 up`
+- `ip netns exec test1 ip a` 查看ip
+- `ip netns exec test1 ping 192.168.33.2` ping网络
+
+#### Docker Bridge0
+
+* `docker network ls` 当前机器上的网络
+* `docker network  inspect 294d9c80b28f` 查看网络信息，随机数为网络编号
+* `brctl show` 
+
+![](./images/bridge.png)
+
+##### 容器之间的Link（很少使用）
+
+* `docker run -d --name test1 busybox /bin/sh -c "while true; do sleep 3600; done"` 创建容器`test1`
+* `docker run -d --name test2 --link test1 busybox /bin/sh -c "while true; do sleep 3600; done"` 创建test2并连接
+* `docker exec -it test2 /bin/sh`
+* `ping test1` 去ping另外的容器，但test1不能ping通test2
+
+##### 自定义bridge
+
+* `docker network create -d bridge xin-bridge` 创建一个网络
+* `docker network ls` 查看所有网络
+* `brctl show` 查看所有bridge
+* `docker run -d --name test3 --network xin-bridge busybox /bin/sh -c "while true; do sleep 3600; done"` 创建容器并连接到自己定义的bridge
+* `docker network connect xin-bridge test1` 将以前已经创建好的容器连接到自定义的网络上，并保留原来的连接，此时连接到自己创建的网络上时，容器可以相互ping通
+* `docker network inspect 8db5dbb30299` 查看网络连接状况
+
+##### 端口映射问题
+
+* ` docker run --name web -d -p 80:80 nginx` 启动一个nginx服务，并将容器端口映射到本机端口
+
+#### Host Network
+
+端口冲突问题
+
+* `docker run -d --name test1 --network host busybox /bin/sh -c "while true; do sleep 3600; done"`
+* `docker network inspect host` 
+* `docker exec -it test1 /bin/sh`
+* `ip a` 同宿主机网络
+
+#### None Network
+
+一个网络孤立的
+
+* `docker run -d --name test1 --network none busybox /bin/sh -c "while true; do sleep 3600; done"`
+
+### 多机网络(Overlay Network)
+
+#### 多容器复杂应用部署
+
+````python
+# app.py
+from flask import Flask
+from redis import Redis
+import os
+import socket
+
+app = Flask(__name__)
+redis = Redis(host=os.environ.get('REDIS_HOST', '127.0.0.1'), port=6379)
+
+
+@app.route('/')
+def hello():
+    redis.incr('hits')
+    return 'Hello Container World! I have been seen %s times and my hostname is %s.\n' % (redis.get('hits'),socket.gethostname())
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
+````
+
+```dockerfile
+# Dockerfile
+FROM python:2.7
+LABEL maintaner="Peng Xiao xiaoquwl@gmail.com"
+COPY . /app
+WORKDIR /app
+RUN pip install flask redis
+EXPOSE 5000
+CMD [ "python", "app.py" ]
+```
+
+* `docker run -d --name redis redis` 启动一个redis容器，该容器并不提供给外部访问，所以不指定端口
+* `docker build -t xin/flask-redis .` 创建一个flask镜像
+* `docker run -d --link redis --name flask-redis -p 5000:5000 -e REDIS_HOST=redis xin/flask-redis` 该变量将注入到flask运行环境变量中
+* `curl 127.0.0.1:5000` 测试访问
+
+#### overlay和etcd(分布式存储)
 
 
 
