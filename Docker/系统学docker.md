@@ -396,9 +396,89 @@ CMD [ "python", "app.py" ]
 
 ## Docker的持久化存储和数据共享
 
+### Data Volume(数据源产生类型容器)
 
+* `VOLUME /var/lib/mysql` 在`Dockerfile`中指定在容器中的存储位置
+* `docker logs mysql1` 查看容器创建过程中的日志输出
+* `docker run -d --name mysql1 -e MYSQL_ALLOW_EMPTY_PASSWD=true  mysql` 创建mysql容器且没有密码
+* `docker volume ls` 查看volume
+* `docker volume inspect xxxxx` 查看volume的信息
+* 即便删除容器volume依然存在
+* `docker volume rm xxxx` 删除一个volume
+* `docker run -d -v mysql:/var/lib/mysql --name mysql1 -e MYSQL_ALLOW_EMPTY_PASSWORD=true  mysql` 将宿主机上的volume命名为mysql
+
+### bind Mounting
+
+指定容器和本地目录之间的关系，保持代码同步
+
+* `docker run -v /home/aaaa:/root/aaa`
+* `docker build -t xinneirong/nginx:v0.0.1 .` 构建一个镜像
+* `docker run -d -p 8080:80 --name web  xinneirong/nginx:v0.0.1`构建一个容器
+* `docker run -d -p 8081:80 --name web2 -v $(pwd):/usr/share/nginx/html  xinneirong/nginx:v0.0.1`当前目录文件的修改会引起容器文件的修改
 
 ## Docker Compose多容器的部署
+
+### 基础
+
+* `docker-compose.yml` 默认名称
+* `Services`等于一个容器
+
+````
+services:
+	db: # services的名称
+		image: postgres:9.4 # 镜像来源
+		Volumes:
+			- "db-data:/var/lib/postgresql/data"
+		networks:
+			- back-tier
+````
+
+````
+servers:
+	worker:
+		build: ./worker # 镜像通过Dockerfile构建
+		links:
+			- db
+			- redis
+		networks:
+			- back-tier
+````
+
+* `Networks`
+* `Volumes`
+
+```yaml
+version: '3' # 版本
+
+services:
+
+  wordpress: # 名称
+    image: wordpress
+    ports:
+      - 8080:80
+    environment: # -e
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_PASSWORD: root
+    networks: # 连接的网络
+      - my-bridge
+
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+    volumes: 
+      - mysql-data:/var/lib/mysql
+    networks:
+      - my-bridge
+
+volumes:
+  mysql-data:
+
+networks:
+  my-bridge:
+    driver: bridge
+```
 
 
 
