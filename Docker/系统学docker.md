@@ -86,7 +86,7 @@ ENTRYPOINT ["/usr/bin/redis-server"]
 
   ```
   FROM centos
-  
+
   RUN yum install -y vim
   ```
 
@@ -151,7 +151,7 @@ CMD and ENTRYPOINT
     ````
     COPY docker-entrypoint.sh  /usr/local/bin
     ENTRYPOINT ["docker-entrypoint.sh"]
-    
+
     EXPOSE 27017
     CMD ["mongod"]
     ````
@@ -392,7 +392,7 @@ CMD [ "python", "app.py" ]
 
 #### overlay和etcd(分布式存储)
 
-
+* ​
 
 ## Docker的持久化存储和数据共享
 
