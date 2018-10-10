@@ -448,7 +448,7 @@ servers:
 * `Volumes`
 
 ```yaml
-version: '3' # 版本
+version: '2' # 版本
 
 services:
 
@@ -480,9 +480,56 @@ networks:
     driver: bridge
 ```
 
+### 使用
 
+* `apt-get install docker-compose` 安装
+* `docker-compose  -f docker-compose.yml up -d` 开始构建并在后台运行
+* `docker-compose ps` 打印运行中的容器
+* `docker-compose stop` 停止容器
+* `docker-compose start` 重新运行容器
+* `docker-compose down` 停止创建的容器并删除
+* `docker-compose images` 列出镜像
+* `docker-compose exec mysql /bin/bash` 进入一个容器
+
+```dockerfile
+version: "3"
+
+services:
+
+  redis:
+    image: redis
+
+  web:
+    build: # 构建
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:5000 # 平行扩展时这里会报错
+    environment:
+      REDIS_HOST: redis
+```
+
+### 水平扩展和负载均衡
+
+* `docker-compose  -f docker-compose.yml  up -d` 删除端口绑定后，运行一服务
+* `docker-compose up --scale web=3 -d` 运行三个容器
+* happroxy
+* `docker-compose build` 优先构建
 
 ## Docker Swarm 
+
+### 简介
+
+* `Manager` 集群的大脑，至少两个，
+* `Worker` 干活的
+* `service` 一种服务的说法
+* `replicsa` 等于容器
+
+### 简单集群创建
+
+
+
+
 
 
 
