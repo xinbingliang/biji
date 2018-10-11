@@ -525,17 +525,38 @@ services:
 * `service` 一种服务的说法
 * `replicsa` 等于容器
 
-### 简单集群创建
+### 三节点集群创建
 
+* 在`node1`中，先创建Manager节点，并指定Manager的地址`192.168.232.137`
 
+  ```shell
+  root@ubuntu:~# docker swarm init --advertise-addr=192.168.232.137
+  Swarm initialized: current node (a7ej6807cefwetyn3dlbcqv9p) is now a manager.
 
+  To add a worker to this swarm, run the following command:
 
+      docker swarm join --token SWMTKN-1-4kwsqeko40ngrxkveorr4jt66y5dar2u9jhg3tzfjogi9l0f9p-4mq483mtm8aobk8oir1dpsvel 192.168.232.137:2377
 
+  To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+  ```
 
+* `docker swarm join --token SWMTKN-1-4kwsqeko40ngrxkveorr4jt66y5dar2u9jhg3tzfjogi9l0f9p-4mq483mtm8aobk8oir1dpsvel 192.168.232.137:2377` 在`node2`、`node3`中执行，加入到其中
+
+* `docker node ls` 显示在集群中的节点
+
+### service的创建和水平维护
+
+* `docker service create --name demo busybox sh -c "while true; do sleep 3600;done"` 在Manager上运行
+* `docker service ls` 查看service
+* `docker service ps demo` 查看
+* `docker service scale demo=5` 水平扩展成5个
+* `docker service ps demo` 
+* `docker rm -f cc5e85ed2284` 强制删除后会重新拉起
+* `docker service rm demo` 删除service
+* `docker service ps demo`
+* ​
 
 ## DevOps
-
-
 
 ## Kubernetes
 
