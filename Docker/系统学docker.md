@@ -554,7 +554,28 @@ services:
 * `docker rm -f cc5e85ed2284` 强制删除后会重新拉起
 * `docker service rm demo` 删除service
 * `docker service ps demo`
-* ​
+
+### Wordpress 部署
+
+* `docker network create -d overlay demo`用于解决service之间的通信，在Manager上
+* `docker network ls` 查看创建的网络
+* ` docker service create --name mysql --env MYSQL_ROOT_PASSWORD=root --env=MYSQL_DATABASE=wordpress --network demo --mount type=volume,source=mysql-data,destination=/var/lib/mysql mysql` 创建一个mysql的service其中mout 相当于-v
+* `docker service ls`
+* `docker service ps mysql`
+* `docker service create --name wordpress -p 80:80 --network demo --env WORDPRESS_DB_PASSWORD=root --env WORDPRESS_DB_HOST=mysql wordpress` 创建另外一个service
+* 使用任意节点的地址都能访问
+
+### 网络发现详解
+
+* `docker network create -d overlay demo` 创建一个网络
+* `docker service create --name whoami -p 8000:8000 --network demo -d jwilder/whoami`
+* `docker service ps whoami`
+* `docker service create --name client -d --network demo busybox sh -c "while true; do sleep 3600;done"`
+* `docker service ls`
+* `docker exec -it f9f8 sh` 进入到`busybox`容器中
+* `ping whoami` 去`busybox`中ping另外一个service
+
+
 
 ## DevOps
 
