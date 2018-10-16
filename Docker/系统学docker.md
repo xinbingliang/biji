@@ -893,6 +893,48 @@ networks:
 
 ## Kubernetes
 
+![](./images/k8s.png)
+
+### 简介
+
+![](./images/k8s_master.png)
+
+* API Server 用于对外交互接口
+* Scheduler 调度模块
+* `Controller`  控制负载均衡等
+* etcd 分布式数据库
+
+![](./images/k8s_node.png)
+
+* `Pod` 容器调度最小单位，拥有相同name space容器的组合
+* `docker`
+* kubelet  k8s 的pod 管理的代理
+* kube-proxy 用于网络的管理
+* fluentd 日志采集存储换个查询
+
+### 安装
+
+* [minikube](https://github.com/kubernetes/minikube)方便在本地搭建单节点的集群
+* [kubeadm](https://github.com/kubernetes/kubeadm)方便在本地搭建多节点的集群
+* [kops](https://github.com/kubernetes/kops)适合在云上部署
+* [](https://labs.play-with-k8s.com/) 在线实验
+
+### minikube
+
+* `curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \  && sudo install minikube-linux-amd64 /usr/local/bin/minikube` 下载包
+
+* 安装kubectl
+
+  ```
+  sudo apt-get update && sudo apt-get install -y apt-transport-https
+  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+  sudo apt-get update
+  sudo apt-get install -y kubectl
+  ```
+
+* 
+
 
 
 ## 容器的运维和监控
