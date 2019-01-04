@@ -47,18 +47,18 @@ server {
 	listen 443;
 
 	server_name www.cloudcpc.com;
-	#ssl on;
+	ssl on;
 	root /var/www/www.cloudcpc.com;
 
 	# Add index.php to the list if you are using PHP
 	index index.php index.html app.php;
 
 	ssl_certificate   /etc/nginx/cert/www.cloudcpc.com/214992213610124.pem;
-    	ssl_certificate_key  /etc/nginx/cert/www.cloudcpc.com/214992213610124.key;
-    	ssl_session_timeout 5m;
-    	ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-    	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    	ssl_prefer_server_ciphers on;
+    ssl_certificate_key  /etc/nginx/cert/www.cloudcpc.com/214992213610124.key;
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
 
 	location / {
 		index index.php;
