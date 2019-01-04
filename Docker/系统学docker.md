@@ -606,7 +606,7 @@ services:
 
   ```
   version: "3.3"
-  
+
   services:
     wordpress:
       image: wordpress
@@ -935,14 +935,16 @@ networks:
 
   ```
   sudo apt install libvirt-clients libvirt-daemon-system qemu-kvm
-  
+
   curl -Lo docker-machine-driver-kvm2 https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 \
   && chmod +x docker-machine-driver-kvm2 \
   && sudo cp docker-machine-driver-kvm2 /usr/local/bin/ \
   && rm docker-machine-driver-kvm2
   ```
 
-* `minikube start --vm-driver kvm2` 启动一个单节点服务
+* `minikube start --vm-driver kvm2` 启动一个单节点服务（https://fatfatson.github.io/2018/07/23/mac%E4%B8%8A%E5%AE%89%E8%A3%85mimikube/）
+
+* 设置上下文
 
 
 
