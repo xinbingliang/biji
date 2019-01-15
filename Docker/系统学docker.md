@@ -87,7 +87,7 @@ ENTRYPOINT ["/usr/bin/redis-server"]
   ```
   FROM centos
 
-  RUN yum install -y vim
+  RUN yum install -y vim & yum clean all
   ```
 
   * `docker build -t xin/centos_vim:v0.0.1 .` 构建
