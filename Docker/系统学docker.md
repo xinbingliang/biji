@@ -448,7 +448,7 @@ servers:
 * `Volumes`
 
 ```yaml
-version: '2' # 版本
+version: '3' # 版本
 
 services:
 
