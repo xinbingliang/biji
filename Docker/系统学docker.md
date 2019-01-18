@@ -780,6 +780,7 @@ networks:
 * `docker stack ps wordpress` 查看stack的细节
 * `docker stack services wordpress` 查看service的状况
 * `docker stack rm wordpress` 停止stack
+* 不能build只能使用制作好的镜像
 
 ### Docker Secret
 
