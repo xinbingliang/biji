@@ -57,7 +57,7 @@ PubkeyAuthentication yes
 ### 生成RSA
 
 * ssh-keygen 生成公钥和私钥(可以使用工具)(RSA)
-* 将公钥文件保存在对应需要登录用户的家目录(.ssh/authorized_keys)中
+* 将公钥文件保存在对应需要登录用户的家目录的文件(.ssh/authorized_keys)中
 * 私钥保存在自己本地家目录中
 * `service ssh restart`
 
