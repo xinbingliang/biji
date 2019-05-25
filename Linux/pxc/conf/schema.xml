@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+	<schema name="user" checkSQLschema="false" sqlMaxLimit="100">
+		<!-- auto sharding by id (long) -->
+		<table name="t_user" dataNode="dn1,dn2" rule="mod-long" />
+	</schema>
+	<!-- <dataNode name="dn1$0-743" dataHost="localhost1" database="db$0-743"
+		/> -->
+	<dataNode name="dn1" dataHost="mycat1" database="user" />
+	<dataNode name="dn2" dataHost="mycat2" database="user" />
+<!-- 	<dataNode name="dn3" dataHost="localhost1" database="db3" /> -->
+	<!--<dataNode name="dn4" dataHost="sequoiadb1" database="SAMPLE" />
+	 <dataNode name="jdbc_dn1" dataHost="jdbchost" database="db1" />
+	<dataNode	name="jdbc_dn2" dataHost="jdbchost" database="db2" />
+	<dataNode name="jdbc_dn3" 	dataHost="jdbchost" database="db3" /> -->
+	<dataHost name="mycat1" maxCon="1000" minCon="10" balance="2"
+			  writeType="1" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="pxc1" url="192.168.232.167:3306" user="admin"
+				   password="123456">
+			<!-- can have multi read hosts -->
+			<readHost host="pxc2" url="192.168.232.168:3306" user="admin" password="123456" />
+			<readHost host="pxc3" url="192.168.232.169:3306" user="admin" password="123456" />
+		</writeHost>
+		<writeHost host="pxc-1" url="192.168.232.168:3306" user="admin"
+				   password="123456">
+			<!-- can have multi read hosts -->
+			<readHost host="pxc-2" url="192.168.232.167:3306" user="admin" password="123456" />
+			<readHost host="pxc-3" url="192.168.232.169:3306" user="admin" password="123456" />
+		</writeHost>
+	</dataHost>
+	<dataHost name="mycat2" maxCon="1000" minCon="10" balance="2"
+			  writeType="1" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="pxc4" url="192.168.232.171:3306" user="admin"
+				   password="123456">
+			<!-- can have multi read hosts -->
+			<readHost host="pxc5" url="192.168.232.172:3306" user="admin" password="123456" />
+			<readHost host="pxc6" url="192.168.232.173:3306" user="admin" password="123456" />
+		</writeHost>
+		<writeHost host="pxc-4" url="192.168.232.172:3306" user="admin"
+				   password="123456">
+			<!-- can have multi read hosts -->
+			<readHost host="pxc-5" url="192.168.232.171:3306" user="admin" password="123456" />
+			<readHost host="pxc-6" url="192.168.232.173:3306" user="admin" password="123456" />
+		</writeHost>
+	</dataHost>
+	<!--
+		<dataHost name="sequoiadb1" maxCon="1000" minCon="1" balance="0" dbType="sequoiadb" dbDriver="jdbc">
+		<heartbeat> 		</heartbeat>
+		 <writeHost host="hostM1" url="sequoiadb://1426587161.dbaas.sequoialab.net:11920/SAMPLE" user="jifeng" 	password="jifeng"></writeHost>
+		 </dataHost>
+
+	  <dataHost name="oracle1" maxCon="1000" minCon="1" balance="0" writeType="0" 	dbType="oracle" dbDriver="jdbc"> <heartbeat>select 1 from dual</heartbeat>
+		<connectionInitSql>alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss'</connectionInitSql>
+		<writeHost host="hostM1" url="jdbc:oracle:thin:@127.0.0.1:1521:nange" user="base" 	password="123456" > </writeHost> </dataHost>
+
+		<dataHost name="jdbchost" maxCon="1000" 	minCon="1" balance="0" writeType="0" dbType="mongodb" dbDriver="jdbc">
+		<heartbeat>select 	user()</heartbeat>
+		<writeHost host="hostM" url="mongodb://192.168.0.99/test" user="admin" password="123456" ></writeHost> </dataHost>
+
+		<dataHost name="sparksql" maxCon="1000" minCon="1" balance="0" dbType="spark" dbDriver="jdbc">
+		<heartbeat> </heartbeat>
+		 <writeHost host="hostM1" url="jdbc:hive2://feng01:10000" user="jifeng" 	password="jifeng"></writeHost> </dataHost> -->
+
+	<!-- <dataHost name="jdbchost" maxCon="1000" minCon="10" balance="0" dbType="mysql"
+		dbDriver="jdbc"> <heartbeat>select user()</heartbeat> <writeHost host="hostM1"
+		url="jdbc:mysql://localhost:3306" user="root" password="123456"> </writeHost>
+		</dataHost> -->
+</mycat:schema>
