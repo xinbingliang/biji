@@ -100,7 +100,7 @@ __Author__ = "xinneirong"
 __Email__ = "xinneirong@gmail.com"
 __Time__ = "2019/6/13 10:23"
 
-transport = TSocket.TSocket('127.0.0.1', 8080)
+transport = TSocket.TSocket('127.0.0.1', 8080) # IP 端口  超时时间
 transport = TTransport.TBufferedTransport(transport)
 protocol = TBinaryProtocol.TBinaryProtocol(transport)
 client = Transmit.Client(protocol)
