@@ -218,3 +218,10 @@ sudo php5enmod mcrypt
 sudo php5enmod mcrypt
 sudo service apache2 restart
 
+
+
+
+
+mysql_secure_installation
+
+https://www.cnblogs.com/opsprobe/p/9126864.html
