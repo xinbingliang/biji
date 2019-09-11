@@ -6,15 +6,14 @@ server {
 	ssl on;
 	root /var/www/riji.xinbingliang.cn;
 
-	# Add index.php to the list if you are using PHP
 	index index.php index.html app.php;
 
 	ssl_certificate   /etc/nginx/cert/riji/214437081420556.pem;
-    	ssl_certificate_key  /etc/nginx/cert/riji/214437081420556.key;
-    	ssl_session_timeout 5m;
-    	ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-    	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    	ssl_prefer_server_ciphers on;
+    ssl_certificate_key  /etc/nginx/cert/riji/214437081420556.key;
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
 
 	location / {
 		index index.php;
