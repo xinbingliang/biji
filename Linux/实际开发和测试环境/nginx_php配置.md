@@ -37,3 +37,14 @@ server {
 }
 ```
 
+## 调整时区
+
+`````
+tzselect
+
+apt install ntpdate
+ntpdate ntp.api.bz
+`````
+
+
+
