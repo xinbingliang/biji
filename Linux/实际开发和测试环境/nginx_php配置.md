@@ -37,6 +37,16 @@ server {
 }
 ```
 
+``````
+server {
+	listen 80;
+        server_name www.71ydj.com;
+        return 301 https://$server_name$request_uri;
+}
+``````
+
+
+
 ## 调整时区
 
 `````
