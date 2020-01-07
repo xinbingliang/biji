@@ -71,8 +71,12 @@ docker run -it --rm -p 8888:8888 testflask:0.1
 ## 安装数据库
 
 `````
-docker run --name flask-mysql -e MYSQL_ROOT_PASSWORD=root -p 3307:3306 -d mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+docker run --name bank-mysql -v /var/www/bank/data:/data -e MYSQL_ROOT_PASSWORD=root -e TZ=Asia/Shanghai -p 3307:3306 -d  mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --default-time_zone='+8:00'
 `````
+
+````
+docker run --name changle-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=changle@1999 -e MYSQL_DATABASE=changle -e TZ=Asia/Shanghai -v  ./data:/data/ -d mysql:5.6 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time_zone='+8:00'
+````
 
 `````
 create database xin charset='utf8mb4';
@@ -101,18 +105,5 @@ server {
 
 }
 ````
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
