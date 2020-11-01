@@ -20,7 +20,7 @@ class TopicType(Base):
 class Topic(Base):
     """题干"""
     id = Column(Integer, primary_key=True, comment='题目主键')
-    type_id = Column(Integer, db.ForeignKey('topic_type.id'), ondelete='CASCADE', comment="题目分类")
+    type_id = Column(Integer, db.ForeignKey('topic_type.id', ondelete='CASCADE'), comment="题目分类")
     question = Column(String(250), nullable=False, comment="问题主干")
     correct = Column(String(30), nullable=False, comment="正确答案")
     type = Column(SmallInteger, nullable=False, comment="1单选题， 2多选题， 3判断题")
