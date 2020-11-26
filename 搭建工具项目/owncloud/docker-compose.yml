@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  owncloud_db:
+    image: mysql:5.7.28
+    volumes:
+      - "owncloud-data:/var/lib/mysql"
+    networks:
+      - owncloud-back-tier
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: owncloud
+  owncloud:
+    image: owncloud
+    ports:
+      - "6111:80"
+    links:
+      - owncloud_db
+    networks:
+      - owncloud-back-tier
+
+#    build:
+#      context: ./
+#      dockerfile: Dockerfile
+#    ports:
+#      - "6111:5557"
+#    links:
+#      - owncloud_db
+#    networks:
+#      - owncloud-back-tier
+#    environment:
+#      DB_HOST: owncloud_db
+
+volumes:
+  owncloud-data:
+
+networks:
+  owncloud-back-tier:
