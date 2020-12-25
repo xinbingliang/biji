@@ -4,7 +4,7 @@ __Email__ = "xinneirong@gmail.com"
 __Time__ = "2020/5/18 11:53"
 
 import os
-
+file_num = 0
 # 遍历文件夹
 def walkFile(file):
     file_list = []
@@ -18,6 +18,7 @@ file_list = walkFile(".")
 
 for file in file_list:
     if file.endswith(("js", "vue", "scss", "json", "wxss", "wxml", "php", 'html', 'py')):
+        file_num += 1
         try:
             with open("./code.txt", "a+") as wf:
                 with open(file, encoding='gbk') as rf:
@@ -25,3 +26,5 @@ for file in file_list:
                     wf.write(rf.read())
         except Exception as e:
             pass
+
+print(file_num)
