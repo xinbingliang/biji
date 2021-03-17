@@ -8,7 +8,7 @@
 
 ````
 mkdir nps && cd nps
-wget https://github.com/ehang-io/nps/releases/download/v0.26.6/linux_amd64_server.tar.gz
+wget https://github.com/ehang-io/nps/releases/download/v0.26.9/linux_amd64_server.tar.gz
 tar -xvf linux_amd64_server.tar.gz
 sudo ./nps install
 ````
