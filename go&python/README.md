@@ -2,6 +2,10 @@
 
 ## 常用命令
 
+### pipenv
+
+* `pip install pipenv==2018.10.13`
+
 ### python 
 
 `````
