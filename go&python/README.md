@@ -31,3 +31,10 @@ docker pull znly/protoc
 生成
 
 * `docker run --rm -v $(pwd):$(pwd) -w $(pwd) znly/protoc -I. --go_out=plugins=grpc:. *.proto`
+
+## mysql
+
+````
+docker run --name go_py_db -e MYSQL_ROOT_PASSWORD=root -p 3306:3306 -d mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+````
+
