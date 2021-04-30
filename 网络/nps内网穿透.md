@@ -55,7 +55,7 @@ sudo ./nps install
 * 安装
 
  `````
-./npc install -server=47.94.128.12:8024 -vkey=xxx
+./npc install -server=47.94.128.12:8024 -vkey=qviopps588f5wjlq
  `````
 
 ## 私有网盘
