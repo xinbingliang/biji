@@ -52,7 +52,7 @@ select id, _c_time, name, phone, organization from user where id=4 into outfile 
 #### 启动docker数据库
 
 ```
-docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+docker run --name mysql-server -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 ```
 
 #### docker启动数据库的数据操作
@@ -61,7 +61,7 @@ docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7 --charac
 # mysql数据存放位置
 cd /var/lib/mysql
 mysqldump -u root party_learn > party_learn.sql;
-CREATE DATABASE humeng CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE mic_user CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 
 source /var/lib/mysql/point_11-20.sql
