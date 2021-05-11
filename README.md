@@ -107,6 +107,6 @@ docker pull znly/protoc
 避免windows下的问题
 
 ````
-pip install pipenv==2018.10.13
+pip3 install pipenv==2018.10.13
 ````
 
