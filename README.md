@@ -60,7 +60,7 @@ docker run --name mysql-server -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql
 ````
 # mysql数据存放位置
 cd /var/lib/mysql
-mysqldump -u root party_learn > party_learn.sql;
+mysqldump -u root party_learn -p > party_learn.sql;
 CREATE DATABASE mic_user CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 source /var/lib/mysql/point_11-20.sql
