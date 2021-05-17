@@ -111,3 +111,11 @@ docker pull znly/protoc
 pip3 install pipenv==2018.10.13
 ````
 
+## Linux管理
+
+查看磁盘剩余空间
+
+````
+df -hl
+````
+
