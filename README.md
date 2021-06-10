@@ -68,7 +68,7 @@ source /var/lib/mysql/point_11-20.sql
 truncate table table_name;  # 清空数据表
 
 
-mysqldump -u root lixing -p --ignore-table=lixing.user --ignore-table=lixing.company > lixing_2021_6_9.sql
+mysqldump -u root lixing -p --ignore-table=lixing.user --ignore-table=lixing.company > lixing_2021_6_10.sql
 ````
 
 ## wsgi
